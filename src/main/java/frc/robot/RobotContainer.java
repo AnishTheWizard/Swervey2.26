@@ -22,6 +22,14 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
+  private static RobotContainer robotContainer = null;
+
+  public static RobotContainer getInstance() {
+    if(robotContainer == null)
+      robotContainer = new RobotContainer();
+    return robotContainer;
+  }
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
