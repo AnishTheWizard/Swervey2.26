@@ -23,17 +23,11 @@ public class Gyro {
     }
 
     public double getYaw() {
-        double[] ypr = new double[3];
-        pigeon.getYawPitchRoll(ypr);
-        return Math.toRadians(ypr[0]);
-    }
-
-    public double getAbsoluteDirection() {
-        return pigeon.getAbsoluteCompassHeading();
+        return Math.toRadians(pigeon.getFusedHeading());
     }
 
     public void zeroGyro() {
-        pigeon.setYaw(0);
+        pigeon.setFusedHeading(0);
     }
 
 }

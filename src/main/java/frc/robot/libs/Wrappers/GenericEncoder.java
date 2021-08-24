@@ -7,6 +7,7 @@ package frc.robot.libs.Wrappers;
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,7 +45,8 @@ public class GenericEncoder {
         this.moduleOffset = moduleOffset;
         encoderType = EncoderType.ANALOG;
         encoderLock = new Object();
-        lastSensorPose = 0;
+        lastSensorPose = analogInput.getValue();
+        overflows = 0;
         service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(this::trackOverflows, 0, 10, TimeUnit.MILLISECONDS);
     }
@@ -56,6 +58,7 @@ public class GenericEncoder {
         encoderType = EncoderType.CANCODER;
         encoderLock = new Object();
         lastSensorPose = 0;
+        overflows = 0;
         service = Executors.newSingleThreadScheduledExecutor();
         service.scheduleAtFixedRate(this::trackOverflows, 0, 10, TimeUnit.MILLISECONDS);
     }
@@ -87,7 +90,7 @@ public class GenericEncoder {
         synchronized(encoderLock) {
             switch(encoderType) {
                 case ANALOG:
-                    return analogInput.getValue() + moduleOffset;
+                    return -analogInput.getValue() + moduleOffset;
                 case CANCODER:
                     return Math.toRadians(canCoder.getAbsolutePosition()) + moduleOffset;
                 default:
@@ -107,6 +110,18 @@ public class GenericEncoder {
                 default:
                     return -1;
 
+            }
+        }
+    }
+
+    public double getCPTicks() {
+        synchronized(encoderLock) {
+            switch(encoderType) {
+                case ANALOG:
+                    return overflows * ticksPerRotation + getAbsolutePosition();
+                default:
+                    return -1;
+                
             }
         }
     }

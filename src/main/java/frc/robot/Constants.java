@@ -20,4 +20,8 @@ public final class Constants {
 
     public static final int OVERFLOW_THRESHOLD = 2048;
     // public static final double OVERFLOW_THRESHOLD = Math.PI; // for cancoders
+
+    public static final int[] MODULE_OFFSETS = {-2092};
+
+    public static final int TICKS_PER_ROTATION = 4096;
 }

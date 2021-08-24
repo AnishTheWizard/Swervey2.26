@@ -30,7 +30,7 @@ public class Controller {
     }
 
     public double getLeftJoyY() {
-        return joy.getY();
+        return -joy.getY();
     }
 
     public double getRightJoyX() {
@@ -38,7 +38,7 @@ public class Controller {
     }
 
     public double getRightJoyY() {
-        return joy.getRawAxis(5);
+        return -joy.getRawAxis(5);
     }
 
     public double getLeftTrigger() {
