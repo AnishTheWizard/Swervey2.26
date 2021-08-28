@@ -12,9 +12,11 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 */
 public class Controller {
     private Joystick joy;
+    private double deadband;
 
-    public Controller(int port) {
+    public Controller(int port, double deadband) {
         joy = new Joystick(port);
+        this.deadband = deadband;
     }
 
     public double getAxis(int axis) {
@@ -26,19 +28,27 @@ public class Controller {
     }
 
     public double getLeftJoyX() {
-        return joy.getX();
+        double joyVal = joy.getX();;
+        if(joyVal < deadband && joyVal > -deadband) joyVal = 0;
+        return joyVal;
     }
 
     public double getLeftJoyY() {
-        return -joy.getY();
+        double joyVal = -joy.getY();;
+        if(joyVal < deadband && joyVal > -deadband) joyVal = 0;
+        return joyVal;
     }
 
     public double getRightJoyX() {
-        return joy.getRawAxis(4);
+        double joyVal = joy.getRawAxis(4);
+        if(joyVal < deadband && joyVal > -deadband) joyVal = 0;
+        return joyVal;
     }
 
     public double getRightJoyY() {
-        return -joy.getRawAxis(5);
+        double joyVal = -joy.getRawAxis(5);
+        if(joyVal < deadband && joyVal > -deadband) joyVal = 0;
+        return joyVal;
     }
 
     public double getLeftTrigger() {

@@ -6,8 +6,8 @@ package frc.robot;
 
 /** Add your docs here. */
 public final class RobotMap {
-    public static final int[] DRIVE_MOTORS = {4};
-    public static final int[] STEER_MOTORS = {8};
-    public static final int[] ENCODERS = {0};
+    public static final int[] DRIVE_MOTORS = {4, 1, 2, 3};
+    public static final int[] STEER_MOTORS = {8, 5, 6, 7};
+    public static final int[] ENCODERS = {0, 1, 2, 3};
     public static final int GYRO = 7;
 }

@@ -92,7 +92,7 @@ public class GenericEncoder {
                 case ANALOG:
                     return -analogInput.getValue() + moduleOffset;
                 case CANCODER:
-                    return Math.toRadians(canCoder.getAbsolutePosition()) + moduleOffset;
+                    return Math.toRadians(canCoder.getAbsolutePosition()) - moduleOffset;
                 default:
                     return -1;
 

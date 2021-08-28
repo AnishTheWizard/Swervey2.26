@@ -79,6 +79,7 @@ public class GenericMotor {
                     break;
 
             }
+            lastSpeed = speed;
         }
     }
 

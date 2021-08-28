@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.libs.Wrappers.Controller;
+import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -20,10 +21,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private DriveTrain driveTrain;
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  public final Controller joy = new Controller(0);
+  private final Controller joy = new Controller(0, Constants.CONTROLLER_DEADBAND);
  
   private static RobotContainer robotContainer = null;
 
@@ -37,6 +39,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    driveTrain = DriveTrain.getInstance();
   }
 
   /**
@@ -45,7 +48,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    joy.getMENUButton().whenPressed(() -> driveTrain.reset());
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -55,5 +60,22 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return m_autoCommand;
+  }
+
+
+  public double getLeftJoyX() {
+    return joy.getLeftJoyX();
+  }
+
+  public double getRightJoyX() {
+    return joy.getRightJoyX();
+  }
+
+  public double getLeftJoyY() {
+    return joy.getLeftJoyY();
+  }
+
+  public double getRightJoyY() {
+    return joy.getRightJoyY();
   }
 }
