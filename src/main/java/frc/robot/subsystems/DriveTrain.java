@@ -61,7 +61,7 @@ public class DriveTrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    swerve.control(RobotContainer.getInstance().getLeftJoyX(), RobotContainer.getInstance().getLeftJoyY(), 0);
+    swerve.control(RobotContainer.getInstance().getLeftJoyX(), RobotContainer.getInstance().getLeftJoyY(), -RobotContainer.getInstance().getRightJoyX());
     
     //Debug
     for(int i = 0; i < Constants.NUMBER_OF_MODULES; i++)

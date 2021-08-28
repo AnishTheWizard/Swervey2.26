@@ -22,34 +22,49 @@ public class Swerve {
   private double[] thetas;
 
   private double percentSpeed;
+  private double[] rotationAngles;
 
 
 
-  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[] modulePositions, double[] pidGains, int numberOfModules, double percentSpeed) {
+  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, int numberOfModules, double percentSpeed) {
     modules = new SwerveModule[numberOfModules];
     speeds = new double[numberOfModules];
     thetas = new double[numberOfModules];
+    this.rotationAngles = new double[numberOfModules];
     this.percentSpeed = percentSpeed; 
     this.gyro = gyro;
+
     for(int i = 0; i < numberOfModules; i++) {
         modules[i] = new SwerveModule(drives[i],
                                       steers[i],
                                       encoders[i],
                                       new PIDController(pidGains[0],
                                                         pidGains[1],
-                                                        pidGains[2])
-                                      );
+                                                        pidGains[2]));
         speeds[i] = 0;
         thetas[i] = 0;
+    }
+
+    for(int i = 0; i < rotationAngles.length; i++) {
+      rotationAngles[i] = Math.atan2(modulePositions[i][1], modulePositions[i][0]) + Math.PI/2;
+      SmartDashboard.putNumber("key  " + i, rotationAngles[i]);
+      SmartDashboard.putNumber("values " + i, modulePositions[i][0]);
     }
       
   }
 
   public void control(double x, double y, double rotate) {
       for(int i = 0; i < modules.length; i++) {
-        double theta = Math.atan2(y, x);
-        double speed = Math.hypot(y, x);
-        
+
+        double rotateVectorX = rotate * Math.cos(rotationAngles[i] + gyro.getYaw());
+        double rotateVectorY = rotate * Math.sin(rotationAngles[i] + gyro.getYaw());
+
+        double targetVectorX = x + rotateVectorX;
+        double targetVectorY = y + rotateVectorY;
+
+        double theta = Math.atan2(targetVectorY, targetVectorX);
+        double speed = Math.hypot(targetVectorY, targetVectorX);
+
         theta -= gyro.getYaw();
 
         if(!(x == 0 && y == 0 && rotate == 0)) {

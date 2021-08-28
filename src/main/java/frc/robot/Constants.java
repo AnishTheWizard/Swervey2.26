@@ -27,11 +27,14 @@ public final class Constants {
 
     public static final int NUMBER_OF_MODULES = 4;
 
-    public static final double[] MODULE_POSITIONS = {0, 0, 0, 0};
-
     public static final double[] STEER_GAINS = {0.226, 0, 0};
 
     public static final double CONTROLLER_DEADBAND = 0.2;
 
     public static final double PERCENT_SPEED = 0.4;
+
+    public static final double[][] MODULE_POSITIONS =  {new double[]{21.5/2, 23.5/2}, 
+                                                        new double[]{-21.5/2, 23.5/2}, 
+                                                        new double[]{-21.5/2, -23.5/2}, 
+                                                        new double[]{21.5/2, -23.5/2}};
 }
