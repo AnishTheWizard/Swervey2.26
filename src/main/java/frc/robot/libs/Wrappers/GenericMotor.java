@@ -43,21 +43,29 @@ public class GenericMotor {
     public GenericMotor(TalonFX falcon) {
         this.falcon = falcon;
         motorType = MotorType.FALCON;
+        this.lastSpeed = 0;
+        this.lastSensorPose = 0;
     }
 
     public GenericMotor(CANSparkMax spark) {
         this.spark = spark;
         motorType = MotorType.SPARK;
+        this.lastSpeed = 0;
+        this.lastSensorPose = 0;
     }
 
     public GenericMotor(TalonSRX talon) {
         this.talon = talon;
         motorType = MotorType.TALON;
+        this.lastSpeed = 0;
+        this.lastSensorPose = 0;
     }
 
     public GenericMotor(VictorSPX victor) {
         this.victor = victor;
         motorType = MotorType.VICTOR;
+        this.lastSpeed = 0;
+        this.lastSensorPose = 0;
     }
 
     public void set(double speed) {
