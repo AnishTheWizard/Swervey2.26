@@ -17,30 +17,42 @@ public class Swerve {
   private SwerveModule[] modules;
   private Gyro gyro;
 
+  private PIDController driveController;
+  private PIDController steerController;
 
   private double[] speeds;
   private double[] thetas;
 
-  private double percentSpeed;
+  private double percentSpeed, topPercentSpeed;
   private double[] rotationAngles;
+  private double[][] modulePoses;
+
+  private double x, y;
+  private double ticksPerFeet;
 
 
-
-  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, int numberOfModules, double percentSpeed) {
+  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, double[] steerGainsHighAndThreshold, int numberOfModules, double percentSpeed, double ticksPerFeet) {
     modules = new SwerveModule[numberOfModules];
     speeds = new double[numberOfModules];
     thetas = new double[numberOfModules];
     this.rotationAngles = new double[numberOfModules];
-    this.percentSpeed = percentSpeed; 
+    this.modulePoses = modulePositions;
+    this.driveController = new PIDController(pidGains[0], pidGains[1], pidGains[2]);
+    this.steerController = new PIDController(pidGains[3], pidGains[4], pidGains[5]);
+    this.percentSpeed = percentSpeed;
+    this.ticksPerFeet = ticksPerFeet;
+
+    this.topPercentSpeed = 0.5;
     this.gyro = gyro;
+    this.x = 0;
+    this.y = 0;
 
     for(int i = 0; i < numberOfModules; i++) {
         modules[i] = new SwerveModule(drives[i],
                                       steers[i],
                                       encoders[i],
-                                      new PIDController(pidGains[0],
-                                                        pidGains[1],
-                                                        pidGains[2]));
+                                      steerController,
+                                      steerGainsHighAndThreshold);
         speeds[i] = 0;
         thetas[i] = 0;
     }
@@ -77,9 +89,23 @@ public class Swerve {
       SmartDashboard.putNumber("speed ", speeds[0]);
       SmartDashboard.putNumber("thetea ", thetas[0]);
 
-      for(int i = 0; i < modules.length; i++) 
-        modules[i].set(speeds[i] * percentSpeed, thetas[i]);
-        // SmartDashboard.putNumber("speeds" + i, speeds[i]);
+      for(int i = 0; i < modules.length; i++) {
+        modules[i].set(speeds[i] * percentSpeed, thetas[i], gyro.getYaw());
+        SmartDashboard.putNumber("speeds" + i, speeds[i] * percentSpeed);
+      }
+  }
+
+  public void toggleSpeed() {
+    if(percentSpeed == topPercentSpeed) {
+      percentSpeed = 0.3;
+    }
+    else {
+      percentSpeed = topPercentSpeed;
+    }
+  }
+
+  public void setTopSpeed(double top) {
+    this.topPercentSpeed = top;
   }
 
   private double[] normalize(double[] arr) {
@@ -101,7 +127,45 @@ public class Swerve {
     return modules[module].getModuleRotationalPose();
   }
 
+  public double[] getPose() {
+    x = 0;
+    y = 0;
+    for(int i = 0; i < modules.length; i++) {
+      x += modules[i].getCurrentModulePosition()[0]/modules.length;
+      y += modules[i].getCurrentModulePosition()[1]/modules.length;
+    }
+    return new double[]{x/ticksPerFeet, y/ticksPerFeet, gyro.getYaw()};
+  }
+
+  public double[] getModulePose(int i) {
+    return new double[] {modules[i].getCurrentModulePosition()[0]/ticksPerFeet, modules[i].getCurrentModulePosition()[1]/ticksPerFeet};
+  }
+
+  public double getModuleDrivePose(int i) {
+    return modules[i].getDrivePose();
+  }
+
+  public double getModuleVelocity(int i) {
+    return modules[i].getDriveVelocity();
+  }
+
+  public void toPose(double[] target) {
+    //TODO add to position function
+    // find err
+    
+  }
+
   public void zeroGyro() {
     gyro.zeroGyro();
+  }
+
+  public void reset() {
+    for(int i = 0; i < modules.length; i++) {
+      modules[i].reset();
+    }
+
+    for(int i = 0; i < modules.length; i++) {
+      modules[i].setPose(modulePoses[i][0] * ticksPerFeet, modulePoses[i][1] * ticksPerFeet);
+    }
   }
 }

@@ -7,6 +7,9 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.MoveForward;
+import frc.robot.commands.PleaseWOrk;
+import frc.robot.commands.idkanymore;
 import frc.robot.subsystems.DriveTrain;
 
 /**
@@ -19,6 +22,13 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
+
+  public static enum Phase {
+    AUTON,
+    TELEOP
+  }
+
+  public static Phase state;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -57,7 +67,9 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = new idkanymore().withTimeout(1.5);
+    state = Phase.AUTON;
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -78,6 +90,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    state = Phase.TELEOP;
   }
 
   /** This function is called periodically during operator control. */

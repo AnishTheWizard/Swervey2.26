@@ -6,11 +6,15 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.LimeLightLineUp;
 import frc.robot.libs.Wrappers.Controller;
+import frc.robot.libs.Wrappers.LimeLight;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.test;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,10 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private DriveTrain driveTrain;
-
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   private final Controller joy = new Controller(0, Constants.CONTROLLER_DEADBAND);
  
@@ -49,7 +50,10 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    joy.getMENUButton().whenPressed(() -> driveTrain.reset());
+    joy.getSTARTButton().whenPressed(() -> driveTrain.reset());
+    joy.getBButton().whenHeld(new test());
+    joy.getYButton().whenPressed(() -> driveTrain.toggleSpeed());
+    joy.getXButton().whenPressed(() -> driveTrain.control(0.0, 0.3, 0.0));
   }
 
   /**
@@ -59,7 +63,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return new test();
   }
 
 

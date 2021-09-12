@@ -19,17 +19,28 @@ public class SwerveModule {
     private GenericEncoder steercoder;
 
     private PIDController steerController;
+    private double steerHighGain;
+    private double steerLowGain;
+    private double threshold;
 
-    public SwerveModule(GenericMotor drive, GenericMotor steer, GenericEncoder steercoder, PIDController steerController) {
+    private double x, y;
+    private double lastSensorPose;
+
+    public SwerveModule(GenericMotor drive, GenericMotor steer, GenericEncoder steercoder, PIDController steerController, double[] steerGainsHighAndThreshold) {
         this.drive = drive;
         this.steer = steer;
         this.steercoder = steercoder;
         this.steerController = steerController;
+        this.steerHighGain = steerGainsHighAndThreshold[0];
+        this.steerLowGain = steerController.getP();
+        this.threshold = steerGainsHighAndThreshold[1];
+        this.x = 0;
+        this.y = 0;//TODO PROB NOT CORRECT
 
     }
 
 
-    public void set(double velocity, double targetAngle) {
+    public void set(double velocity, double targetAngle, double gyroAngle) {
 
         double err = getError(targetAngle, steercoder.getContinousPosition());
 
@@ -41,9 +52,25 @@ public class SwerveModule {
             err += Math.PI;
             velocity*=-1;
         }
+
+        //split into vector components
+        double ang = steercoder.getContinousPosition() % (2 * Math.PI);
+        double mag = drive.getSensorPose() - lastSensorPose;
+
+        x += mag * Math.cos(ang - gyroAngle);
+        y += mag * Math.sin(ang - gyroAngle);
+
+        lastSensorPose = drive.getSensorPose();
+
+        steerController.setP(
+            velocity < threshold ? steerHighGain : steerLowGain
+        ); // if vel is less than thresh, then you need more force to spin the wheel
+
         double rotateSpeed = steerController.calculate(err);
         drive.set(velocity);
         steer.set(rotateSpeed);
+        SmartDashboard.putNumber("steerspeed of mod 4 probably ", rotateSpeed);
+        SmartDashboard.putNumber("err be like ", err);
     }
 
     private double getError(double target, double current) {
@@ -57,5 +84,29 @@ public class SwerveModule {
 
     public double getModuleRotationalPose() {
         return steercoder.getCPTicks();
+    }
+
+    public double[] getCurrentModulePosition() {
+        return new double[]{x, y}; 
+    }
+
+    public void setPose(double x, double y) {
+        this.x = x;
+        this.y = y;
+        lastSensorPose = 0;
+        drive.setSensorPose(0);
+    }
+
+    public double getDrivePose() {
+        return drive.getSensorPose();
+    }
+
+    public double getDriveVelocity() {
+        return drive.getVelocity();
+    }
+
+    public void reset() {
+        x = 0;
+        y = 0;
     }
 }
