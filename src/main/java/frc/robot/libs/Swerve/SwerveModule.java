@@ -57,8 +57,8 @@ public class SwerveModule {
         double ang = steercoder.getContinousPosition() % (2 * Math.PI);
         double mag = drive.getSensorPose() - lastSensorPose;
 
-        x += mag * Math.cos(ang - gyroAngle);
-        y += mag * Math.sin(ang - gyroAngle);
+        x += mag * Math.cos(ang + gyroAngle);
+        y += mag * Math.sin(ang + gyroAngle);
 
         lastSensorPose = drive.getSensorPose();
 
@@ -93,8 +93,6 @@ public class SwerveModule {
     public void setPose(double x, double y) {
         this.x = x;
         this.y = y;
-        lastSensorPose = 0;
-        drive.setSensorPose(0);
     }
 
     public double getDrivePose() {

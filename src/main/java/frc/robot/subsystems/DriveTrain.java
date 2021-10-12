@@ -39,7 +39,7 @@ public class DriveTrain extends SubsystemBase {
 
   private PIDController limelightController;
 
-  private boolean driveTrainLock= false;
+  private boolean driveTrainLock = false;
 
   public static DriveTrain getInstance() {
     if(driveTrain == null)
@@ -64,7 +64,7 @@ public class DriveTrain extends SubsystemBase {
       steers[i] = new GenericMotor(steer);
       encoders[i] = new GenericEncoder(encoder, Constants.TICKS_PER_ROTATION, Constants.OVERFLOW_THRESHOLD, Constants.MODULE_OFFSETS[i]);
     }
-    swerve = new Swerve(drives, steers, encoders, gyro, Constants.MODULE_POSITIONS, Constants.MODULE_GAINS, new double[]{Constants.STEER_GAINS_HIGH, Constants.STEER_GAINS_THRESHOLD}, new double[]{Constants.ROTATE_GAINS_HIGH, Constants.ROTATE_GAINIS_THRESHOLD, Constants.ROTATE_VELOCITY_THRESHOLD},Constants.NUMBER_OF_MODULES, Constants.PERCENT_SPEED, Constants.TICKS_PER_FOOT);
+    swerve = new Swerve(drives, steers, encoders, gyro, Constants.MODULE_POSITIONS, Constants.MODULE_GAINS, new double[]{Constants.STEER_GAINS_HIGH, Constants.STEER_GAINS_THRESHOLD}, new double[]{Constants.ROTATE_GAINS_HIGH, Constants.ROTATE_GAINS_THRESHOLD, Constants.ROTATE_VELOCITY_THRESHOLD},Constants.NUMBER_OF_MODULES, Constants.PERCENT_SPEED, Constants.TICKS_PER_FOOT);
   }
 
   public void control(double x, double y, double rotate) {

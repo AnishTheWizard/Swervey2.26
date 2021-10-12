@@ -70,6 +70,8 @@ public class Swerve {
         thetas[i] = 0;
     }
 
+    reset();
+
     for(int i = 0; i < rotationAngles.length; i++) {
       rotationAngles[i] = Math.atan2(modulePositions[i][1], modulePositions[i][0]) + Math.PI/2;
       SmartDashboard.putNumber("key  " + i, rotationAngles[i]);
@@ -163,6 +165,13 @@ public class Swerve {
     }
     return new double[]{x/ticksPerFeet, y/ticksPerFeet, gyro.getYaw()};
   }
+  
+  public void toPose(double[] target) {
+    //TODO add to position function
+    // find err
+    double[] currentPose = getPose();
+    control(driveController.calculate(currentPose[0], target[0]), driveController.calculate(currentPose[1], target[1]), rotateController.calculate(currentPose[2], target[2]));
+  }
 
   public double[] getModulePose(int i) {
     return new double[] {modules[i].getCurrentModulePosition()[0]/ticksPerFeet, modules[i].getCurrentModulePosition()[1]/ticksPerFeet};
@@ -176,23 +185,14 @@ public class Swerve {
     return modules[i].getDriveVelocity();
   }
 
-  public void toPose(double[] target) {
-    //TODO add to position function
-    // find err
-    
-  }
-
   public void zeroGyro() {
     gyro.zeroGyro();
+    isGyroAngleSet = false;
   }
 
   public void reset() {
     for(int i = 0; i < modules.length; i++) {
-      modules[i].reset();
-    }
-
-    for(int i = 0; i < modules.length; i++) {
-      modules[i].setPose(modulePoses[i][0] * ticksPerFeet, modulePoses[i][1] * ticksPerFeet);
+      modules[i].setPose((modulePoses[i][0] * ticksPerFeet), (modulePoses[i][1] * ticksPerFeet));
     }
   }
 }

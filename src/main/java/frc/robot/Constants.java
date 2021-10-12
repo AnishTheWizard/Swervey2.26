@@ -22,17 +22,19 @@ public final class Constants {
 
     public static final int TICKS_PER_ROTATION = 4096;
 
-    public static final double MOTOR_ROTATIONS_PER_WHEEL_ROTATION = 8.31;
+    // public static final double MOTOR_ROTATIONS_PER_WHEEL_ROTATION = 8.31;
 
-    public static final double WHEEL_DIAMETER = 4;
+    // public static final double WHEEL_DIAMETER = 4;
 
-    public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
+    // public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
     // public static final double TICKS_PER_FOOT = TICKS_PER_ROTATION * MOTOR_ROTATIONS_PER_WHEEL_ROTATION / WHEEL_CIRCUMFERENCE;
-    public static final double TICKS_PER_FOOT = 12520;
+    public static final double TICKS_PER_FOOT = 1;
     public static final int NUMBER_OF_MODULES = 4;
 
-    public static final double[] MODULE_GAINS = {0.0, 0.0, 0.0, 0.226, 0, 0};
+    public static final double[] MODULE_GAINS = {0.226, 0.0, 0.0,
+                                                 0.226, 0.0, 0.0,
+                                                 0.226, 0.0, 0.0};
     // public static final double[] STEER_GAINS = {0.5, 0, 0};
 
     public static final double CONTROLLER_DEADBAND = 0.1;
@@ -44,15 +46,15 @@ public final class Constants {
                                                         new double[]{-21.5/2, -23.5/2}, 
                                                         new double[]{21.5/2, -23.5/2}};
 
-    public static final double[] LIMELIGHT_GAINS = {0.0, 0.0, 0.0};
+    public static final double[] LIMELIGHT_GAINS = {0.1, 0.0, 0.0};
 
 	public static final double STEER_GAINS_THRESHOLD = 0.08;
 
     public static final double STEER_GAINS_HIGH = 0.35;
 
-    public static final double ROTATE_GAINS_HIGH = 0;
+    public static final double ROTATE_GAINS_HIGH = 0.302;
 
-    public static final double ROTATE_GAINIS_THRESHOLD = 0;
+    public static final double ROTATE_GAINS_THRESHOLD = 0.08;
 
-    public static final double ROTATE_VELOCITY_THRESHOLD = 0;
+    public static final double ROTATE_VELOCITY_THRESHOLD = 0.1;
 }
