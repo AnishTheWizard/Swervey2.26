@@ -103,7 +103,7 @@ public class GenericMotor {
             case FALCON:
                 return falcon.getSelectedSensorPosition();
             case SPARK:
-                return spark.getEncoder().getPosition() * spark.getEncoder().getPositionConversionFactor();
+                return spark.getEncoder().getPosition();
             case TALON:
                 return talon.getSelectedSensorPosition();
             case VICTOR:
@@ -177,8 +177,8 @@ public class GenericMotor {
             case FALCON:
                 falcon.setSelectedSensorPosition(sensorPos);
                 break;
-            // case SPARK:
-            //     spark.getEncoder().setPosition(sensorPos / spark.getEncoder().getPositionConversionFactor());
+            case SPARK:
+                spark.getEncoder().setPosition(sensorPos);
             case TALON:
                 talon.setSelectedSensorPosition(sensorPos);
                 break;

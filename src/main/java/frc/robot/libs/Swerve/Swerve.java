@@ -19,6 +19,7 @@ public class Swerve {
 
   private PIDController driveController;
   private PIDController steerController;
+  private PIDController rotateController;
 
   private double[] speeds;
   private double[] thetas;
@@ -27,11 +28,18 @@ public class Swerve {
   private double[] rotationAngles;
   private double[][] modulePoses;
 
+  private double rotateGainsThreshold;
+  private double rotateVelocityThreshold;
+  private double rotateHighGain;
+  private double rotateLowGain;
+  private boolean isGyroAngleSet;
+  private double gyroHold;
+
   private double x, y;
   private double ticksPerFeet;
 
 
-  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, double[] steerGainsHighAndThreshold, int numberOfModules, double percentSpeed, double ticksPerFeet) {
+  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, double[] steerGainsHighAndThreshold, double[] rotateGainsHighAndThresholds, int numberOfModules, double percentSpeed, double ticksPerFeet) {
     modules = new SwerveModule[numberOfModules];
     speeds = new double[numberOfModules];
     thetas = new double[numberOfModules];
@@ -39,6 +47,11 @@ public class Swerve {
     this.modulePoses = modulePositions;
     this.driveController = new PIDController(pidGains[0], pidGains[1], pidGains[2]);
     this.steerController = new PIDController(pidGains[3], pidGains[4], pidGains[5]);
+    this.rotateController = new PIDController(pidGains[6], pidGains[7], pidGains[8]);
+    this.rotateHighGain = rotateGainsHighAndThresholds[0];
+    this.rotateGainsThreshold = rotateGainsHighAndThresholds[1];
+    this.rotateVelocityThreshold = rotateGainsHighAndThresholds[2];
+    this.rotateLowGain = rotateController.getP();
     this.percentSpeed = percentSpeed;
     this.ticksPerFeet = ticksPerFeet;
 
@@ -66,6 +79,20 @@ public class Swerve {
   }
 
   public void control(double x, double y, double rotate) {
+    if(Math.abs(rotate) < rotateVelocityThreshold){
+      if(!isGyroAngleSet) {
+        gyroHold = gyro.getYaw();
+        isGyroAngleSet = true;
+      }
+
+      rotateController.setP(
+        Math.hypot(x, y) < rotateGainsThreshold ? rotateHighGain : rotateLowGain
+      );
+      rotate = rotateController.calculate(gyro.getYaw(), gyroHold);
+    }
+    else {
+      isGyroAngleSet = false;
+    }
       for(int i = 0; i < modules.length; i++) {
 
         double rotateVectorX = rotate * Math.cos(rotationAngles[i] + gyro.getYaw());

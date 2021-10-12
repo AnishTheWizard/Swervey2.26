@@ -49,4 +49,10 @@ public final class Constants {
 	public static final double STEER_GAINS_THRESHOLD = 0.08;
 
     public static final double STEER_GAINS_HIGH = 0.35;
+
+    public static final double ROTATE_GAINS_HIGH = 0;
+
+    public static final double ROTATE_GAINIS_THRESHOLD = 0;
+
+    public static final double ROTATE_VELOCITY_THRESHOLD = 0;
 }
