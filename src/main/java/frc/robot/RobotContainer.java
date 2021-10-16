@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.MoveForward;
 import frc.robot.commands.test;
 
 /**
@@ -52,9 +53,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     joy.getSTARTButton().whenPressed(() -> driveTrain.reset());
-    joy.getBButton().whenHeld(new RunCommand(() -> driveTrain.toPose(new double[]{0, 0, 0}), DriveTrain.getInstance()));
+    // joy.getBButton().whenHeld(new RunCommand(() -> driveTrain.toPose(new double[]{0, 0, 0}), DriveTrain.getInstance()));
     joy.getYButton().whenPressed(() -> driveTrain.toggleSpeed());
-    joy.getXButton().whenPressed(() -> driveTrain.control(0.0, 0.3, 0.0));
+    // joy.getXButton().whenPressed(() -> driveTrain.control(0.0, 0.3, 0.0));
+    joy.getBButton().whenPressed(new MoveForward());
   }
 
   /**

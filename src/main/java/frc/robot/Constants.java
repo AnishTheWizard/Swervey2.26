@@ -29,12 +29,12 @@ public final class Constants {
     // public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
     // public static final double TICKS_PER_FOOT = TICKS_PER_ROTATION * MOTOR_ROTATIONS_PER_WHEEL_ROTATION / WHEEL_CIRCUMFERENCE;
-    public static final double TICKS_PER_FOOT = 1;
+    public static final double TICKS_PER_FOOT = 274.2227618497799;
     public static final int NUMBER_OF_MODULES = 4;
 
-    public static final double[] MODULE_GAINS = {0.226, 0.0, 0.0,
+    public static final double[] MODULE_GAINS = {0.503, 0.0, 0.0,
                                                  0.226, 0.0, 0.0,
-                                                 0.226, 0.0, 0.0};
+                                                 0.669, 0.0, 0.0};
     // public static final double[] STEER_GAINS = {0.5, 0, 0};
 
     public static final double CONTROLLER_DEADBAND = 0.1;
@@ -46,15 +46,18 @@ public final class Constants {
                                                         new double[]{-21.5/2, -23.5/2}, 
                                                         new double[]{21.5/2, -23.5/2}};
 
-    public static final double[] LIMELIGHT_GAINS = {0.1, 0.0, 0.0};
+    public static final double[] LIMELIGHT_GAINS = {0.0226  , 0.0, 0.0};
 
 	public static final double STEER_GAINS_THRESHOLD = 0.08;
 
     public static final double STEER_GAINS_HIGH = 0.35;
 
-    public static final double ROTATE_GAINS_HIGH = 0.302;
+    public static final double ROTATE_GAINS_HIGH = 1;
 
     public static final double ROTATE_GAINS_THRESHOLD = 0.08;
 
-    public static final double ROTATE_VELOCITY_THRESHOLD = 0.1;
+    public static final double ROTATE_VELOCITY_THRESHOLD = 0.09;
+
+    public static final double TRANSLATAIONAL_ERROR = 0.4;
+    public static final double ROTATE_ERROR = 0.25;
 }

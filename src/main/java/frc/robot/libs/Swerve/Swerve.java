@@ -37,9 +37,12 @@ public class Swerve {
 
   private double x, y;
   private double ticksPerFeet;
+  private double[] target;
+  private double allowedTranslationalError;
+  private double allowedRotationalError;
 
 
-  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, double[] steerGainsHighAndThreshold, double[] rotateGainsHighAndThresholds, int numberOfModules, double percentSpeed, double ticksPerFeet) {
+  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, double[] steerGainsHighAndThreshold, double[] rotateGainsHighAndThresholds, int numberOfModules, double percentSpeed, double ticksPerFeet, double allowedTranslationalError, double allowedRotationalError) {
     modules = new SwerveModule[numberOfModules];
     speeds = new double[numberOfModules];
     thetas = new double[numberOfModules];
@@ -54,11 +57,14 @@ public class Swerve {
     this.rotateLowGain = rotateController.getP();
     this.percentSpeed = percentSpeed;
     this.ticksPerFeet = ticksPerFeet;
+    this.allowedTranslationalError = allowedTranslationalError;
+    this.allowedRotationalError = allowedRotationalError;
 
     this.topPercentSpeed = 0.5;
     this.gyro = gyro;
     this.x = 0;
     this.y = 0;
+    this.target = new double[3];
 
     for(int i = 0; i < numberOfModules; i++) {
         modules[i] = new SwerveModule(drives[i],
@@ -81,20 +87,26 @@ public class Swerve {
   }
 
   public void control(double x, double y, double rotate) {
-    if(Math.abs(rotate) < rotateVelocityThreshold){
-      if(!isGyroAngleSet) {
-        gyroHold = gyro.getYaw();
-        isGyroAngleSet = true;
-      }
+    // if(Math.abs(rotate) < rotateVelocityThreshold){
+    //   if(!isGyroAngleSet) {
+    //     gyroHold = gyro.getYaw();
+    //     isGyroAngleSet = true;
+    //   }
 
-      rotateController.setP(
-        Math.hypot(x, y) < rotateGainsThreshold ? rotateHighGain : rotateLowGain
-      );
-      rotate = rotateController.calculate(gyro.getYaw(), gyroHold);
-    }
-    else {
-      isGyroAngleSet = false;
-    }
+    //   rotateController.setP(
+    //     Math.hypot(x, y) < rotateGainsThreshold ? rotateHighGain : rotateLowGain
+    //   );
+
+    //   rotate = rotateController.calculate(gyro.getYaw(), gyroHold);
+    //   SmartDashboard.putNumber("rotate correction", rotate);
+    //   if(Math.abs(rotate) < rotateVelocityThreshold) rotate = 0;
+
+      
+    // }
+    // else {
+    //   isGyroAngleSet = false;
+    // }
+
       for(int i = 0; i < modules.length; i++) {
 
         double rotateVectorX = rotate * Math.cos(rotationAngles[i] + gyro.getYaw());
@@ -137,6 +149,10 @@ public class Swerve {
     this.topPercentSpeed = top;
   }
 
+  public double getCurrentSpeedMultiplier() {
+    return percentSpeed;
+  }
+
   private double[] normalize(double[] arr) {
     double maxVal = 1;
     for(int i = 0; i < arr.length; i++) {
@@ -167,10 +183,34 @@ public class Swerve {
   }
   
   public void toPose(double[] target) {
-    //TODO add to position function
-    // find err
     double[] currentPose = getPose();
-    control(driveController.calculate(currentPose[0], target[0]), driveController.calculate(currentPose[1], target[1]), rotateController.calculate(currentPose[2], target[2]));
+    this.target = target;
+    //Gain Scheduling
+    double xErr = driveController.calculate(currentPose[0], target[0]);
+    double yErr = driveController.calculate(currentPose[1], target[1]);
+    double speed = Math.hypot(xErr, yErr);
+    rotateController.setP(
+      speed < rotateGainsThreshold ? rotateHighGain : rotateLowGain
+    );
+    double rotateErr = rotateController.calculate(currentPose[2], target[2]);
+
+    // control(driveController.calculate(currentPose[0], target[0]), driveController.calculate(currentPose[1], target[1]), rotateController.calculate(currentPose[2], target[2]));
+    control(xErr, yErr, rotateErr);
+
+    SmartDashboard.putNumber("rotate calculation error", rotateController.getPositionError());
+    SmartDashboard.putBoolean("rotate setpoint", rotateController.atSetpoint());
+  }
+
+  public boolean atSetpoint() {
+    double[] currentPose = getPose();
+    int correctPoints = 0;
+    for(int i = 0; i < currentPose.length; i++) {
+      if(currentPose[i] < (target[i] + (i != 2 ? allowedTranslationalError : allowedRotationalError)) && currentPose[i] > target[i] - (i != 2 ? allowedTranslationalError : allowedRotationalError)) {
+        correctPoints++;
+      }
+    }
+    SmartDashboard.putNumber("correctp oints", correctPoints);
+    return correctPoints == currentPose.length;
   }
 
   public double[] getModulePose(int i) {

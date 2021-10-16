@@ -53,6 +53,7 @@ public class DriveTrain extends SubsystemBase {
     this.gyro = new Gyro(new TalonSRX(RobotMap.GYRO)); //TODO
     // this.gyro = new Gyro(RobotMap.GYRO);
     this.limelightController = new PIDController(Constants.LIMELIGHT_GAINS[0], Constants.LIMELIGHT_GAINS[1], Constants.LIMELIGHT_GAINS[2]);
+    this.limelightController.setTolerance(0.9);
     for(int i = 0; i < Constants.NUMBER_OF_MODULES; i++) {
       CANSparkMax drive = new CANSparkMax(RobotMap.DRIVE_MOTORS[i], MotorType.kBrushless);
       CANSparkMax steer = new CANSparkMax(RobotMap.STEER_MOTORS[i], MotorType.kBrushless);
@@ -64,7 +65,7 @@ public class DriveTrain extends SubsystemBase {
       steers[i] = new GenericMotor(steer);
       encoders[i] = new GenericEncoder(encoder, Constants.TICKS_PER_ROTATION, Constants.OVERFLOW_THRESHOLD, Constants.MODULE_OFFSETS[i]);
     }
-    swerve = new Swerve(drives, steers, encoders, gyro, Constants.MODULE_POSITIONS, Constants.MODULE_GAINS, new double[]{Constants.STEER_GAINS_HIGH, Constants.STEER_GAINS_THRESHOLD}, new double[]{Constants.ROTATE_GAINS_HIGH, Constants.ROTATE_GAINS_THRESHOLD, Constants.ROTATE_VELOCITY_THRESHOLD},Constants.NUMBER_OF_MODULES, Constants.PERCENT_SPEED, Constants.TICKS_PER_FOOT);
+    swerve = new Swerve(drives, steers, encoders, gyro, Constants.MODULE_POSITIONS, Constants.MODULE_GAINS, new double[]{Constants.STEER_GAINS_HIGH, Constants.STEER_GAINS_THRESHOLD}, new double[]{Constants.ROTATE_GAINS_HIGH, Constants.ROTATE_GAINS_THRESHOLD, Constants.ROTATE_VELOCITY_THRESHOLD},Constants.NUMBER_OF_MODULES, Constants.PERCENT_SPEED, Constants.TICKS_PER_FOOT, Constants.TRANSLATAIONAL_ERROR, Constants.ROTATE_ERROR);
   }
 
   public void control(double x, double y, double rotate) {
@@ -75,8 +76,16 @@ public class DriveTrain extends SubsystemBase {
     swerve.toggleSpeed();
   }
 
+  public double getCurrentSpeedMultiplier() {
+    return swerve.getCurrentSpeedMultiplier();
+  }
+
   public void toPose(double[] pose) {
     swerve.toPose(pose);
+  }
+
+  public boolean atSetpoint() {
+    return swerve.atSetpoint();
   }
 
   public void reset() {
@@ -119,5 +128,7 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("xpose", pose[0]);
     SmartDashboard.putNumber("ypose", pose[1]);
     SmartDashboard.putNumber("angle", pose[2]);
+
+    SmartDashboard.putBoolean("at Setpoint", atSetpoint());
     }
 }

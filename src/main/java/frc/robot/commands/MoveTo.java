@@ -5,14 +5,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.libs.Wrappers.LimeLight;
 import frc.robot.subsystems.DriveTrain;
 
-public class LimeLightLineUp extends CommandBase {
-  /** Creates a new LimeLightLineUp. */
-  public LimeLightLineUp() {
+public class MoveTo extends CommandBase {
+  /** Creates a new MoveTo. */
+  double[] target;
+  int sustain;
+  public MoveTo(double[] target) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(DriveTrain.getInstance());
+    this.target = target;
   }
 
   // Called when the command is initially scheduled.
@@ -24,7 +26,7 @@ public class LimeLightLineUp extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    DriveTrain.getInstance().control(0, 0, DriveTrain.getInstance().getRotationPIDController().calculate(LimeLight.getHorizontalOffset(), 0));
+    DriveTrain.getInstance().toPose(target);
   }
 
   // Called once the command ends or is interrupted.
@@ -36,6 +38,12 @@ public class LimeLightLineUp extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return DriveTrain.getInstance().getRotationPIDController().atSetpoint();
+    if(DriveTrain.getInstance().atSetpoint()) {
+      sustain++;
+    }
+    else {
+      sustain = 0;
+    }
+    return sustain >= DriveTrain.getInstance().getCurrentSpeedMultiplier() * 10;
   }
 }
