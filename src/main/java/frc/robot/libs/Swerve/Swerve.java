@@ -149,6 +149,10 @@ public class Swerve {
     this.topPercentSpeed = top;
   }
 
+  public void setTargetPosition(double[] target) {
+    this.target = target;
+  }
+
   public double getCurrentSpeedMultiplier() {
     return percentSpeed;
   }

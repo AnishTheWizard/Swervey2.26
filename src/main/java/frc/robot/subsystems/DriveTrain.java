@@ -84,6 +84,10 @@ public class DriveTrain extends SubsystemBase {
     swerve.toPose(pose);
   }
 
+  public void setTarget(double[] target) {
+    swerve.setTargetPosition(target);
+  }
+
   public boolean atSetpoint() {
     return swerve.atSetpoint();
   }

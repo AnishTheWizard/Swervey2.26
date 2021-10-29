@@ -128,7 +128,5 @@ public class GenericEncoder {
 
     private double ticksToRadians(double ticks) {
         return ticks * 2 * Math.PI / ticksPerRotation;
-    }
-
-    
+    }    
 }

@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DriveTrain;
@@ -18,14 +19,10 @@ public class MoveForward extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new MoveTo(new double[]{0.0, 0.0, 0.0}),
-      new WaitCommand(0.75),
-      new MoveTo(new double[]{0.0, 0.0, -0.75*Math.PI}),
-      new LimeLightLineUp(),
-      new MoveTo(new double[]{0.0, 10.0, -Math.PI/2}),
-      new MoveTo(new double[]{2.0, 10.0, -Math.PI/2}),
-      new MoveTo(new double[]{2.0, 10.0, -Math.PI})
-      // new MoveTo(new double[]{2.0, 3.0, -Math.PI})
+      new MoveTo(new double[]{10, 0, 0}),
+      new InstantCommand(() -> DriveTrain.getInstance().setTarget(new double[] {15, 0, 0})),
+      new RunCommand(() -> DriveTrain.getInstance().control(0, 0.3, 0)).raceWith(new InstantCommand(DriveTrain.getInstance()::atSetpoint, DriveTrain.getInstance())),
+      new MoveTo(new double[]{0, 0, 0})
     );
   }
 }
