@@ -19,26 +19,44 @@ public class SwerveModule {
     private GenericEncoder steercoder;
 
     private PIDController steerController;
-    private double steerHighGain;
-    private double steerLowGain;
+    private double[] steerHighGains;
+    private double[] steerLowGains;
     private double threshold;
 
     private double x, y;
     private double lastSensorPose;
 
-    public SwerveModule(GenericMotor drive, GenericMotor steer, GenericEncoder steercoder, PIDController steerController, double[] steerGainsHighAndThreshold) {
+    // public SwerveModule(GenericMotor drive, GenericMotor steer, GenericEncoder steercoder, PIDController steerController, double[] steerGainsHighAndThreshold) {
+    //     this.drive = drive;
+    //     this.steer = steer;
+    //     this.steercoder = steercoder;
+    //     this.steerController = steerController;
+    //     this.steerHighGain = steerGainsHighAndThreshold[0];
+    //     this.steerLowGain = steerController.getP();
+    //     this.threshold = steerGainsHighAndThreshold[1];
+    //     this.x = 0;
+    //     this.y = 0;//TODO PROB NOT CORRECT
+
+    // }
+
+    public SwerveModule(GenericMotor drive, GenericMotor steer, GenericEncoder steercoder, PIDController steerController, double[] modulePosition) {
         this.drive = drive;
         this.steer = steer;
         this.steercoder = steercoder;
         this.steerController = steerController;
-        this.steerHighGain = steerGainsHighAndThreshold[0];
-        this.steerLowGain = steerController.getP();
-        this.threshold = steerGainsHighAndThreshold[1];
-        this.x = 0;
-        this.y = 0;//TODO PROB NOT CORRECT
-
+        this.x = modulePosition[0];
+        this.y = modulePosition[1];
     }
 
+    public void configureSteerPIDGains(double[] highGains, double[] lowGains) {
+        this.steerHighGains = highGains;
+        this.steerLowGains = lowGains;
+        this.steerController.setPID(lowGains[0], lowGains[1], lowGains[2]);
+    }
+
+    public void configureSteerThreshold(double sThresh) {
+        this.threshold = sThresh;
+    }
 
     public void set(double velocity, double targetAngle, double gyroAngle) {
 
@@ -62,9 +80,12 @@ public class SwerveModule {
 
         lastSensorPose = drive.getSensorPose();
 
-        steerController.setP(
-            velocity < threshold ? steerHighGain : steerLowGain
-        ); // if vel is less than thresh, then you need more force to spin the wheel
+        // steerController.setP(
+        //     velocity < threshold ? steerHighGain : steerLowGain
+        // ); // if vel is less than thresh, then you need more force to spin the wheel
+
+        if(velocity < threshold) steerController.setPID(steerHighGains[0], steerHighGains[1], steerHighGains[2]);
+        else steerController.setPID(steerLowGains[0], steerLowGains[1], steerLowGains[2]);
 
         double rotateSpeed = steerController.calculate(err);
         drive.set(velocity);

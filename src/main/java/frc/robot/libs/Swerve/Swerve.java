@@ -9,7 +9,6 @@ import frc.robot.libs.Wrappers.GenericEncoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.Wrappers.Gyro;
-import frc.robot.libs.Swerve.SwerveModule;
 
 /** Add your docs here. */
 public class Swerve {
@@ -24,14 +23,14 @@ public class Swerve {
   private double[] speeds;
   private double[] thetas;
 
-  private double percentSpeed, topPercentSpeed;
+  private double lowPercentSpeed, topPercentSpeed;
   private double[] rotationAngles;
   private double[][] modulePoses;
 
   private double rotateGainsThreshold;
   private double rotateVelocityThreshold;
-  private double rotateHighGain;
-  private double rotateLowGain;
+  private double[] rotateHighGains;
+  private double[] rotateLowGains;
   private boolean isGyroAngleSet;
   private double gyroHold;
 
@@ -42,25 +41,16 @@ public class Swerve {
   private double allowedRotationalError;
 
 
-  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, double[] steerGainsHighAndThreshold, double[] rotateGainsHighAndThresholds, int numberOfModules, double percentSpeed, double ticksPerFeet, double allowedTranslationalError, double allowedRotationalError) {
+  public Swerve(GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, int numberOfModules) {
     modules = new SwerveModule[numberOfModules];
     speeds = new double[numberOfModules];
     thetas = new double[numberOfModules];
     this.rotationAngles = new double[numberOfModules];
     this.modulePoses = modulePositions;
-    this.driveController = new PIDController(pidGains[0], pidGains[1], pidGains[2]);
-    this.steerController = new PIDController(pidGains[3], pidGains[4], pidGains[5]);
-    this.rotateController = new PIDController(pidGains[6], pidGains[7], pidGains[8]);
-    this.rotateHighGain = rotateGainsHighAndThresholds[0];
-    this.rotateGainsThreshold = rotateGainsHighAndThresholds[1];
-    this.rotateVelocityThreshold = rotateGainsHighAndThresholds[2];
-    this.rotateLowGain = rotateController.getP();
-    this.percentSpeed = percentSpeed;
-    this.ticksPerFeet = ticksPerFeet;
-    this.allowedTranslationalError = allowedTranslationalError;
-    this.allowedRotationalError = allowedRotationalError;
+    this.driveController = new PIDController(0, 0, 0);
+    this.steerController = new PIDController(0, 0, 0);
+    this.rotateController = new PIDController(0, 0, 0);
 
-    this.topPercentSpeed = 0.5;
     this.gyro = gyro;
     this.x = 0;
     this.y = 0;
@@ -71,41 +61,65 @@ public class Swerve {
                                       steers[i],
                                       encoders[i],
                                       steerController,
-                                      steerGainsHighAndThreshold);
+                                      modulePositions[i]);
         speeds[i] = 0;
         thetas[i] = 0;
     }
 
-    reset();
-
-    for(int i = 0; i < rotationAngles.length; i++) {
+    for(int i = 0; i < rotationAngles.length; i++) 
       rotationAngles[i] = Math.atan2(modulePositions[i][1], modulePositions[i][0]) + Math.PI/2;
-      SmartDashboard.putNumber("key  " + i, rotationAngles[i]);
-      SmartDashboard.putNumber("values " + i, modulePositions[i][0]);
-    }
-      
+  }
+
+  public void configureSteerPIDGains(double[] highGains, double[] lowGains) {
+    for(SwerveModule mod : modules) mod.configureSteerPIDGains(highGains, lowGains);
+  }
+
+  public void configureDrivePIDGains(double[] gains) {
+    this.driveController.setPID(gains[0], gains[1], gains[2]);
+  }
+
+  public void configureRotatePIDGains(double[] highGains, double[] lowGains) {
+    this.rotateHighGains = highGains;
+    this.rotateLowGains = lowGains;
+    this.rotateController.setPID(rotateLowGains[0], rotateLowGains[1], rotateLowGains[1]);
+  }
+
+  public void configureThresholds(double sThresh, double rThresh, double rVelThresh) {
+    for(SwerveModule mod : modules) mod.configureSteerThreshold(sThresh);
+    this.rotateGainsThreshold = rThresh;
+    this.rotateVelocityThreshold = rVelThresh;
+  }
+
+  public void configureAutonomousParameters(double ticksPerFeet, double translationalError, double rotationalError) {
+    this.ticksPerFeet = ticksPerFeet;
+    this.allowedTranslationalError = translationalError;
+    this.allowedRotationalError = rotationalError;
+  }
+
+  public void configureSpeeds(double topSpeed, double lowSpeed) {
+    this.topPercentSpeed = topSpeed;
+    this.lowPercentSpeed = lowSpeed;
   }
 
   public void control(double x, double y, double rotate) {
-    // if(Math.abs(rotate) < rotateVelocityThreshold){
-    //   if(!isGyroAngleSet) {
-    //     gyroHold = gyro.getYaw();
-    //     isGyroAngleSet = true;
-    //   }
+    if(Math.abs(rotate) < rotateVelocityThreshold){
+      if(!isGyroAngleSet) {
+        gyroHold = gyro.getYaw();
+        isGyroAngleSet = true;
+      }
 
-    //   rotateController.setP(
-    //     Math.hypot(x, y) < rotateGainsThreshold ? rotateHighGain : rotateLowGain
-    //   );
+      if(Math.hypot(x, y) < rotateGainsThreshold) rotateController.setPID(rotateHighGains[0], rotateHighGains[1], rotateHighGains[2]);
+      else rotateController.setPID(rotateLowGains[0], rotateLowGains[1], rotateLowGains[2]);
 
-    //   rotate = rotateController.calculate(gyro.getYaw(), gyroHold);
-    //   SmartDashboard.putNumber("rotate correction", rotate);
-    //   if(Math.abs(rotate) < rotateVelocityThreshold) rotate = 0;
+      rotate = rotateController.calculate(gyro.getYaw(), gyroHold);
+      SmartDashboard.putNumber("rotate correction", rotate);
+      if(Math.abs(rotate) < rotateVelocityThreshold) rotate = 0;
 
       
-    // }
-    // else {
-    //   isGyroAngleSet = false;
-    // }
+    }
+    else {
+      isGyroAngleSet = false;
+    }
 
       for(int i = 0; i < modules.length; i++) {
 
@@ -131,17 +145,17 @@ public class Swerve {
       SmartDashboard.putNumber("thetea ", thetas[0]);
 
       for(int i = 0; i < modules.length; i++) {
-        modules[i].set(speeds[i] * percentSpeed, thetas[i], gyro.getYaw());
-        SmartDashboard.putNumber("speeds" + i, speeds[i] * percentSpeed);
+        modules[i].set(speeds[i] * lowPercentSpeed, thetas[i], gyro.getYaw());
+        SmartDashboard.putNumber("speeds" + i, speeds[i] * lowPercentSpeed);
       }
   }
 
   public void toggleSpeed() {
-    if(percentSpeed == topPercentSpeed) {
-      percentSpeed = 0.3;
+    if(lowPercentSpeed == topPercentSpeed) {
+      lowPercentSpeed = 0.3;
     }
     else {
-      percentSpeed = topPercentSpeed;
+      lowPercentSpeed = topPercentSpeed;
     }
   }
 
@@ -154,7 +168,7 @@ public class Swerve {
   }
 
   public double getCurrentSpeedMultiplier() {
-    return percentSpeed;
+    return lowPercentSpeed;
   }
 
   private double[] normalize(double[] arr) {
@@ -193,12 +207,12 @@ public class Swerve {
     double xErr = driveController.calculate(currentPose[0], target[0]);
     double yErr = driveController.calculate(currentPose[1], target[1]);
     double speed = Math.hypot(xErr, yErr);
-    rotateController.setP(
-      speed < rotateGainsThreshold ? rotateHighGain : rotateLowGain
-    );
+
+    if(speed < rotateGainsThreshold) rotateController.setPID(rotateHighGains[0], rotateHighGains[1], rotateHighGains[2]);
+    else rotateController.setPID(rotateLowGains[0], rotateLowGains[1], rotateLowGains[2]);
+
     double rotateErr = rotateController.calculate(currentPose[2], target[2]);
 
-    // control(driveController.calculate(currentPose[0], target[0]), driveController.calculate(currentPose[1], target[1]), rotateController.calculate(currentPose[2], target[2]));
     control(xErr, yErr, rotateErr);
 
     SmartDashboard.putNumber("rotate calculation error", rotateController.getPositionError());

@@ -23,6 +23,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.Swerve.Swerve;
+import frc.robot.libs.Swerve.SwerveBuilder;
 import frc.robot.libs.Wrappers.GenericEncoder;
 
 public class DriveTrain extends SubsystemBase {
@@ -65,7 +66,12 @@ public class DriveTrain extends SubsystemBase {
       steers[i] = new GenericMotor(steer);
       encoders[i] = new GenericEncoder(encoder, Constants.TICKS_PER_ROTATION, Constants.OVERFLOW_THRESHOLD, Constants.MODULE_OFFSETS[i]);
     }
-    swerve = new Swerve(drives, steers, encoders, gyro, Constants.MODULE_POSITIONS, Constants.MODULE_GAINS, new double[]{Constants.STEER_GAINS_HIGH, Constants.STEER_GAINS_THRESHOLD}, new double[]{Constants.ROTATE_GAINS_HIGH, Constants.ROTATE_GAINS_THRESHOLD, Constants.ROTATE_VELOCITY_THRESHOLD},Constants.NUMBER_OF_MODULES, Constants.PERCENT_SPEED, Constants.TICKS_PER_FOOT, Constants.TRANSLATAIONAL_ERROR, Constants.ROTATE_ERROR);
+    swerve = new SwerveBuilder(drives, steers, encoders, gyro)
+                 .PIDGains(Constants.MODULE_GAINS, Constants.SCHEDULED_GAINS, Constants.STEER_AND_ROTATE_THRESHOLDS)
+                 .modulePositions(Constants.MODULE_POSITIONS)
+                 .speedBounds(Constants.SPEED_BOUNDS)
+                 .autonomousParameters(Constants.TICKS_PER_FOOT, Constants.ALLOWED_ERRORS)
+                 .buildSwerve();
   }
 
   public void control(double x, double y, double rotate) {
