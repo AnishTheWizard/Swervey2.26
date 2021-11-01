@@ -11,13 +11,10 @@ import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 import frc.robot.libs.Wrappers.GenericMotor;
 import frc.robot.libs.Wrappers.Gyro;
-import frc.robot.libs.Wrappers.LimeLight;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.controller.PIDController;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -50,22 +47,28 @@ public class DriveTrain extends SubsystemBase {
   public DriveTrain() {
     this.drives = new GenericMotor[Constants.NUMBER_OF_MODULES];
     this.steers = new GenericMotor[Constants.NUMBER_OF_MODULES];
+
     this.encoders = new GenericEncoder[Constants.NUMBER_OF_MODULES];
-    this.gyro = new Gyro(new TalonSRX(RobotMap.GYRO)); //TODO
-    // this.gyro = new Gyro(RobotMap.GYRO);
+
+    this.gyro = new Gyro(new TalonSRX(RobotMap.GYRO));
+
     this.limelightController = new PIDController(Constants.LIMELIGHT_GAINS[0], Constants.LIMELIGHT_GAINS[1], Constants.LIMELIGHT_GAINS[2]);
     this.limelightController.setTolerance(0.9);
+
     for(int i = 0; i < Constants.NUMBER_OF_MODULES; i++) {
       CANSparkMax drive = new CANSparkMax(RobotMap.DRIVE_MOTORS[i], MotorType.kBrushless);
       CANSparkMax steer = new CANSparkMax(RobotMap.STEER_MOTORS[i], MotorType.kBrushless);
-      // TalonFX drive = new TalonFX(RobotMap.DRIVE_MOTORS[i]);
-      // VictorSPX steer = new VictorSPX(RobotMap.STEER_MOTORS[i]);
+
       AnalogInput encoder = new AnalogInput(RobotMap.ENCODERS[i]);
+
       steer.setInverted(true);
+
       drives[i] = new GenericMotor(drive);
       steers[i] = new GenericMotor(steer);
+
       encoders[i] = new GenericEncoder(encoder, Constants.TICKS_PER_ROTATION, Constants.OVERFLOW_THRESHOLD, Constants.MODULE_OFFSETS[i]);
     }
+
     swerve = new SwerveBuilder(drives, steers, encoders, gyro)
                  .PIDGains(Constants.MODULE_GAINS, Constants.SCHEDULED_GAINS, Constants.STEER_AND_ROTATE_THRESHOLDS)
                  .modulePositions(Constants.MODULE_POSITIONS)
@@ -123,7 +126,7 @@ public class DriveTrain extends SubsystemBase {
     SmartDashboard.putNumber("Top Speed", top);
     swerve.setTopSpeed(top);
     
-    //Debug
+    // TODO Debug
     for(int i = 0; i < Constants.NUMBER_OF_MODULES; i++) {
       SmartDashboard.putNumber("Encoders " + i, swerve.getModuleRotationalPose(i));
       SmartDashboard.putNumber("PoseX " + i, swerve.getModulePose(i)[0]);

@@ -13,7 +13,6 @@ import frc.robot.libs.Wrappers.GenericMotor;
  * Used to clear up and handle numerous parameters
 */
 public class SwerveBuilder {
-    // GenericMotor[] drives, GenericMotor[] steers, GenericEncoder[] encoders, Gyro gyro, double[][] modulePositions, double[] pidGains, double[] steerGainsHighAndThreshold, double[] rotateGainsHighAndThresholds, int numberOfModules, double percentSpeed, double ticksPerFeet, double allowedTranslationalError, double allowedRotationalError
     private GenericMotor[] drives;
     private GenericMotor[] steers;
     private GenericEncoder[] encoders;

@@ -7,13 +7,15 @@ package frc.robot.libs.Wrappers;
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/** Add your docs here. */
+/** Add your docs here. 
+ * @author Anish Chandra
+ * Handles Encoder Data to Simplify Position Data Collection
+*/
 public class GenericEncoder {
 
     private AnalogInput analogInput;

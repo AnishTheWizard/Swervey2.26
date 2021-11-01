@@ -5,12 +5,12 @@
 package frc.robot.libs.Swerve;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.Wrappers.GenericEncoder;
 import frc.robot.libs.Wrappers.GenericMotor;
 
 /** Add your docs here. 
  * @author Anish Chandra
+ * Handle a module within the Swerve DriveTrain
 */
 public class SwerveModule {
 
@@ -24,28 +24,18 @@ public class SwerveModule {
     private double threshold;
 
     private double x, y;
+    private final double[] defaultModulePosition;
     private double lastSensorPose;
-
-    // public SwerveModule(GenericMotor drive, GenericMotor steer, GenericEncoder steercoder, PIDController steerController, double[] steerGainsHighAndThreshold) {
-    //     this.drive = drive;
-    //     this.steer = steer;
-    //     this.steercoder = steercoder;
-    //     this.steerController = steerController;
-    //     this.steerHighGain = steerGainsHighAndThreshold[0];
-    //     this.steerLowGain = steerController.getP();
-    //     this.threshold = steerGainsHighAndThreshold[1];
-    //     this.x = 0;
-    //     this.y = 0;//TODO PROB NOT CORRECT
-
-    // }
 
     public SwerveModule(GenericMotor drive, GenericMotor steer, GenericEncoder steercoder, PIDController steerController, double[] modulePosition) {
         this.drive = drive;
         this.steer = steer;
         this.steercoder = steercoder;
         this.steerController = steerController;
+        this.defaultModulePosition = modulePosition;
         this.x = modulePosition[0];
         this.y = modulePosition[1];
+        this.lastSensorPose = 0;
     }
 
     public void configureSteerPIDGains(double[] highGains, double[] lowGains) {
@@ -71,18 +61,13 @@ public class SwerveModule {
             velocity*=-1;
         }
 
-        //split into vector components
-        double ang = steercoder.getContinousPosition() % (2 * Math.PI);
-        double mag = drive.getSensorPose() - lastSensorPose;
+        double direction = steercoder.getContinousPosition() % (2 * Math.PI);
+        double distance = drive.getSensorPose() - lastSensorPose;
 
-        x += mag * Math.cos(ang + gyroAngle);
-        y += mag * Math.sin(ang + gyroAngle);
+        x += distance * Math.cos(direction + gyroAngle);
+        y += distance * Math.sin(direction + gyroAngle);
 
         lastSensorPose = drive.getSensorPose();
-
-        // steerController.setP(
-        //     velocity < threshold ? steerHighGain : steerLowGain
-        // ); // if vel is less than thresh, then you need more force to spin the wheel
 
         if(velocity < threshold) steerController.setPID(steerHighGains[0], steerHighGains[1], steerHighGains[2]);
         else steerController.setPID(steerLowGains[0], steerLowGains[1], steerLowGains[2]);
@@ -90,15 +75,13 @@ public class SwerveModule {
         double rotateSpeed = steerController.calculate(err);
         drive.set(velocity);
         steer.set(rotateSpeed);
-        SmartDashboard.putNumber("steerspeed of mod 4 probably ", rotateSpeed);
-        SmartDashboard.putNumber("err be like ", err);
     }
 
     private double getError(double target, double current) {
-        double err = (target - current) % (2 * Math.PI); //finds the error and brings it down to 0-2pi
+        double err = (target - current) % (2 * Math.PI);
         
         if(err > Math.PI) err -=  2 * Math.PI;
-        else if(err < -Math.PI) err += 2 * Math.PI; //negative errors are treated differently, to counter the module not going above 2092 (mod offset)
+        else if(err < -Math.PI) err += 2 * Math.PI;
         
         return err;
     }
@@ -125,7 +108,7 @@ public class SwerveModule {
     }
 
     public void reset() {
-        x = 0;
-        y = 0;
+        x = defaultModulePosition[0];
+        y = defaultModulePosition[1];
     }
 }

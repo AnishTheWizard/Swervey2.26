@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.Wrappers.Gyro;
 
-/** Add your docs here. */
+/** Add your docs here. 
+ * @author Anish Chandra
+ * Handles the Swerve DriveTrain
+*/
 public class Swerve {
 
   private SwerveModule[] modules;
@@ -23,7 +26,7 @@ public class Swerve {
   private double[] speeds;
   private double[] thetas;
 
-  private double lowPercentSpeed, topPercentSpeed;
+  private double lowPercentSpeed, topPercentSpeed, currentPercentSpeed;
   private double[] rotationAngles;
   private double[][] modulePoses;
 
@@ -151,11 +154,11 @@ public class Swerve {
   }
 
   public void toggleSpeed() {
-    if(lowPercentSpeed == topPercentSpeed) {
-      lowPercentSpeed = 0.3;
+    if(currentPercentSpeed == topPercentSpeed) {
+      currentPercentSpeed = lowPercentSpeed;
     }
     else {
-      lowPercentSpeed = topPercentSpeed;
+      currentPercentSpeed = topPercentSpeed;
     }
   }
 
