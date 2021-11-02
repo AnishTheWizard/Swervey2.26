@@ -4,19 +4,22 @@
 
 package frc.robot.libs.Wrappers;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
-/** Add your docs here.
+/**
  * @author Anish Chandra
+ * Allows the Generic Use of a Motor
  */
 public class GenericMotor {
     //supports falcons, talons, sparks, victors

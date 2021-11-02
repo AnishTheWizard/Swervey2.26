@@ -4,13 +4,13 @@
 
 package frc.robot.libs.Swerve;
 
-import frc.robot.libs.Wrappers.Gyro;
-import frc.robot.libs.Wrappers.GenericEncoder;
 import frc.robot.libs.Wrappers.GenericMotor;
+import frc.robot.libs.Wrappers.GenericEncoder;
+import frc.robot.libs.Wrappers.Gyro;
 
 /** 
  * @author Anish Chandra
- * Used to clear up and handle numerous parameters
+ * Builds the Swerve Object
 */
 public class SwerveBuilder {
     private GenericMotor[] drives;

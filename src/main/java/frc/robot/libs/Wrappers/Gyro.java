@@ -4,11 +4,12 @@
 
 package frc.robot.libs.Wrappers;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-/** Add your docs here. 
+/**  
  * @author Anish Chandra
+ * Allows the Generic Usage of a Pigeon IMU
 */
 public class Gyro {
     private PigeonIMU pigeon;

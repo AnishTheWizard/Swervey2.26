@@ -5,31 +5,33 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
-import frc.robot.libs.Wrappers.GenericMotor;
-import frc.robot.libs.Wrappers.Gyro;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.controller.PIDController;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.Swerve.Swerve;
 import frc.robot.libs.Swerve.SwerveBuilder;
+import frc.robot.libs.Wrappers.GenericMotor;
 import frc.robot.libs.Wrappers.GenericEncoder;
+import frc.robot.libs.Wrappers.Gyro;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.AnalogInput;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.controller.PIDController;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveTrain extends SubsystemBase {
-  /** Creates a new DriveTrain. */
-  //TESTING CODE
+
   private Swerve swerve;
 
-
   private static DriveTrain driveTrain = null;
+
   private GenericMotor[] drives;
   private GenericMotor[] steers;
   private GenericEncoder[] encoders;

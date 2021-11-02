@@ -7,7 +7,10 @@ package frc.robot.libs.Wrappers;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-/** Add your docs here. */
+/** 
+ * @author Anish Chandra
+ * Simplifies Data Collection from LimeLight
+ */
 public class LimeLight {
     private static NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
 

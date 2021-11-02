@@ -7,10 +7,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.libs.Wrappers.Controller;
+
 import frc.robot.subsystems.DriveTrain;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.commands.LimeLightLineUp;
 import frc.robot.commands.MoveForward;
-import frc.robot.commands.test;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -60,7 +62,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new test();
+    return new LimeLightLineUp();
   }
 
 

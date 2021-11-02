@@ -4,13 +4,13 @@
 
 package frc.robot.libs.Swerve;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
-import frc.robot.libs.Wrappers.GenericEncoder;
 import frc.robot.libs.Wrappers.GenericMotor;
+import frc.robot.libs.Wrappers.GenericEncoder;
+import edu.wpi.first.wpilibj.controller.PIDController;
 
-/** Add your docs here. 
+/** 
  * @author Anish Chandra
- * Handle a module within the Swerve DriveTrain
+ * Manages all components within a Swerve Module
 */
 public class SwerveModule {
 
@@ -90,6 +90,14 @@ public class SwerveModule {
         return steercoder.getCPTicks();
     }
 
+    public double getDrivePose() {
+        return drive.getSensorPose();
+    }
+
+    public double getDriveVelocity() {
+        return drive.getVelocity();
+    }
+
     public double[] getCurrentModulePosition() {
         return new double[]{x, y}; 
     }
@@ -97,14 +105,6 @@ public class SwerveModule {
     public void setPose(double x, double y) {
         this.x = x;
         this.y = y;
-    }
-
-    public double getDrivePose() {
-        return drive.getSensorPose();
-    }
-
-    public double getDriveVelocity() {
-        return drive.getVelocity();
     }
 
     public void reset() {

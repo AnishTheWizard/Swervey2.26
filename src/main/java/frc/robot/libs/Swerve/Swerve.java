@@ -6,11 +6,11 @@ package frc.robot.libs.Swerve;
 
 import frc.robot.libs.Wrappers.GenericMotor;
 import frc.robot.libs.Wrappers.GenericEncoder;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.libs.Wrappers.Gyro;
 
-/** Add your docs here. 
+import edu.wpi.first.wpilibj.controller.PIDController;
+
+/**
  * @author Anish Chandra
  * Handles the Swerve DriveTrain
 */
@@ -115,7 +115,6 @@ public class Swerve {
       else rotateController.setPID(rotateLowGains[0], rotateLowGains[1], rotateLowGains[2]);
 
       rotate = rotateController.calculate(gyro.getYaw(), gyroHold);
-      SmartDashboard.putNumber("rotate correction", rotate);
       if(Math.abs(rotate) < rotateVelocityThreshold) rotate = 0;
 
       
@@ -144,13 +143,25 @@ public class Swerve {
       }
 
       speeds = normalize(speeds);
-      SmartDashboard.putNumber("speed ", speeds[0]);
-      SmartDashboard.putNumber("thetea ", thetas[0]);
 
       for(int i = 0; i < modules.length; i++) {
         modules[i].set(speeds[i] * lowPercentSpeed, thetas[i], gyro.getYaw());
-        SmartDashboard.putNumber("speeds" + i, speeds[i] * lowPercentSpeed);
       }
+  }
+
+  private double[] normalize(double[] arr) {
+    double maxVal = 1;
+    for(int i = 0; i < arr.length; i++) {
+      if(arr[i] > maxVal) {
+        maxVal = arr[i];
+      }
+    }
+
+    for(int i = 0; i < arr.length; i++) {
+      arr[i] /= maxVal;
+    }
+
+    return arr;
   }
 
   public void toggleSpeed() {
@@ -171,26 +182,23 @@ public class Swerve {
   }
 
   public double getCurrentSpeedMultiplier() {
-    return lowPercentSpeed;
-  }
-
-  private double[] normalize(double[] arr) {
-    double maxVal = 1;
-    for(int i = 0; i < arr.length; i++) {
-      if(arr[i] > maxVal) {
-        maxVal = arr[i];
-      }
-    }
-
-    for(int i = 0; i < arr.length; i++) {
-      arr[i] /= maxVal;
-    }
-
-    return arr;
+    return currentPercentSpeed;
   }
 
   public double getModuleRotationalPose(int module) {
     return modules[module].getModuleRotationalPose();
+  }
+
+  public double[] getModulePose(int i) {
+    return new double[] {modules[i].getCurrentModulePosition()[0]/ticksPerFeet, modules[i].getCurrentModulePosition()[1]/ticksPerFeet};
+  }
+
+  public double getModuleDrivePose(int i) {
+    return modules[i].getDrivePose();
+  }
+
+  public double getModuleVelocity(int i) {
+    return modules[i].getDriveVelocity();
   }
 
   public double[] getPose() {
@@ -206,7 +214,6 @@ public class Swerve {
   public void toPose(double[] target) {
     double[] currentPose = getPose();
     this.target = target;
-    //Gain Scheduling
     double xErr = driveController.calculate(currentPose[0], target[0]);
     double yErr = driveController.calculate(currentPose[1], target[1]);
     double speed = Math.hypot(xErr, yErr);
@@ -217,9 +224,6 @@ public class Swerve {
     double rotateErr = rotateController.calculate(currentPose[2], target[2]);
 
     control(xErr, yErr, rotateErr);
-
-    SmartDashboard.putNumber("rotate calculation error", rotateController.getPositionError());
-    SmartDashboard.putBoolean("rotate setpoint", rotateController.atSetpoint());
   }
 
   public boolean atSetpoint() {
@@ -230,20 +234,7 @@ public class Swerve {
         correctPoints++;
       }
     }
-    SmartDashboard.putNumber("correctp oints", correctPoints);
     return correctPoints == currentPose.length;
-  }
-
-  public double[] getModulePose(int i) {
-    return new double[] {modules[i].getCurrentModulePosition()[0]/ticksPerFeet, modules[i].getCurrentModulePosition()[1]/ticksPerFeet};
-  }
-
-  public double getModuleDrivePose(int i) {
-    return modules[i].getDrivePose();
-  }
-
-  public double getModuleVelocity(int i) {
-    return modules[i].getDriveVelocity();
   }
 
   public void zeroGyro() {
