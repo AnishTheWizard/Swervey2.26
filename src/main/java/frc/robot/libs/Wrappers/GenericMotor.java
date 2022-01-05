@@ -48,9 +48,9 @@ public class GenericMotor {
     public GenericMotor(TalonFX falcon) {
         this.falcon = falcon;
         motorType = MotorType.FALCON;
-        
         this.lastSpeed = 0;
         this.lastSensorPose = falcon.getSelectedSensorPosition();
+
     }
 
     public GenericMotor(CANSparkMax spark) {
@@ -59,21 +59,18 @@ public class GenericMotor {
         spark.getEncoder().setPositionConversionFactor(42);
         this.lastSpeed = 0;
         this.lastSensorPose = spark.getEncoder().getPosition();
-
     }
 
     public GenericMotor(TalonSRX talon) {
         this.talon = talon;
         motorType = MotorType.TALON;
-                
         this.lastSpeed = 0;
         this.lastSensorPose = talon.getSelectedSensorPosition();
     }
 
     public GenericMotor(VictorSPX victor) {
         this.victor = victor;
-        motorType = MotorType.VICTOR;
-                
+        motorType = MotorType.VICTOR;    
         this.lastSpeed = 0;
         this.lastSensorPose = victor.getSelectedSensorPosition();
     }
