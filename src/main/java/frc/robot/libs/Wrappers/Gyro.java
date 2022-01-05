@@ -4,16 +4,15 @@
 
 package frc.robot.libs.Wrappers;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-/** Add your docs here. 
+/**  
  * @author Anish Chandra
+ * Allows the Generic Usage of a Pigeon IMU
 */
 public class Gyro {
     private PigeonIMU pigeon;
-    //TODO take a look at absolute compass mode
-
     public Gyro(TalonSRX controller) {
         pigeon = new PigeonIMU(controller);
     }
@@ -23,11 +22,15 @@ public class Gyro {
     }
 
     public double getYaw() {
-        return Math.toRadians(pigeon.getFusedHeading());
+        // return Math.toRadians(pigeon.getFusedHeading());
+        double[] ypr = new double[3];
+        pigeon.getYawPitchRoll(ypr);
+        return Math.toRadians(ypr[0]);
     }
 
     public void zeroGyro() {
-        pigeon.setFusedHeading(0);
+        // pigeon.setFusedHeading(0);
+        pigeon.setYaw(0);
     }
 
 }

@@ -4,22 +4,22 @@
 
 package frc.robot.libs.Wrappers;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import frc.robot.Constants.PassiveMode;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
-/** Add your docs here.
+/**
  * @author Anish Chandra
+ * Allows the Generic Use of a Motor
  */
 public class GenericMotor {
     //supports falcons, talons, sparks, victors
@@ -35,6 +35,11 @@ public class GenericMotor {
         VICTOR
     }
 
+    public static enum PassiveMode {
+        COAST,
+        BRAKE
+    }
+
     private MotorType motorType;
 
     private double lastSpeed;
@@ -44,28 +49,30 @@ public class GenericMotor {
         this.falcon = falcon;
         motorType = MotorType.FALCON;
         this.lastSpeed = 0;
-        this.lastSensorPose = 0;
+        this.lastSensorPose = falcon.getSelectedSensorPosition();
+
     }
 
     public GenericMotor(CANSparkMax spark) {
         this.spark = spark;
         motorType = MotorType.SPARK;
+        spark.getEncoder().setPositionConversionFactor(42);
         this.lastSpeed = 0;
-        this.lastSensorPose = 0;
+        this.lastSensorPose = spark.getEncoder().getPosition();
     }
 
     public GenericMotor(TalonSRX talon) {
         this.talon = talon;
         motorType = MotorType.TALON;
         this.lastSpeed = 0;
-        this.lastSensorPose = 0;
+        this.lastSensorPose = talon.getSelectedSensorPosition();
     }
 
     public GenericMotor(VictorSPX victor) {
         this.victor = victor;
-        motorType = MotorType.VICTOR;
+        motorType = MotorType.VICTOR;    
         this.lastSpeed = 0;
-        this.lastSensorPose = 0;
+        this.lastSensorPose = victor.getSelectedSensorPosition();
     }
 
     public void set(double speed) {
@@ -95,22 +102,45 @@ public class GenericMotor {
         switch(motorType) {
             case FALCON:
                 return falcon.getSelectedSensorPosition();
+            case SPARK:
+                return spark.getEncoder().getPosition();
             case TALON:
                 return talon.getSelectedSensorPosition();
             case VICTOR:
                 return victor.getSelectedSensorPosition();
             default:
                 return -1;
-
+        }
+    }
+    
+    public double getVelocity() {
+        switch(motorType) {
+            case FALCON:
+                return falcon.getSelectedSensorVelocity();
+            case SPARK:
+                return spark.getEncoder().getVelocity();
+            case TALON:
+                return talon.getSelectedSensorVelocity();
+            case VICTOR:
+                return victor.getSelectedSensorVelocity();
+            default:
+                return -1;
         }
     }
 
-    public double getSensorErr() {
+    public double getConversionFactor() {
+        return spark.getEncoder().getCountsPerRevolution();
+    }
+
+    public double getSensorErr() {//automatically updates the lastPose through the set method in swerve module
         double err;
         switch(motorType) {
             case FALCON:
                 err = falcon.getSelectedSensorPosition() - lastSensorPose;
                 lastSensorPose = falcon.getSelectedSensorPosition();
+            case SPARK:
+                err = spark.getEncoder().getPosition() - lastSensorPose;
+                lastSensorPose = spark.getEncoder().getPosition();
             case TALON:
                 err = talon.getSelectedSensorPosition() - lastSensorPose;
                 lastSensorPose = talon.getSelectedSensorPosition();
@@ -142,11 +172,13 @@ public class GenericMotor {
         }
     }
 
-    public boolean setSensorPose(double sensorPos) {
+    public void setSensorPose(double sensorPos) {
         switch(motorType) {
             case FALCON:
                 falcon.setSelectedSensorPosition(sensorPos);
                 break;
+            case SPARK:
+                spark.getEncoder().setPosition(sensorPos);
             case TALON:
                 talon.setSelectedSensorPosition(sensorPos);
                 break;
@@ -154,9 +186,8 @@ public class GenericMotor {
                 victor.setSelectedSensorPosition(sensorPos);
                 break;
             default:
-                return false;
+                break;
         }
-        return true;
     }
 
     public void setNeutralMode(PassiveMode neutralMode) {

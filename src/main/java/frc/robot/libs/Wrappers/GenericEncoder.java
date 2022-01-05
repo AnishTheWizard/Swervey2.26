@@ -5,15 +5,16 @@
 package frc.robot.libs.Wrappers;
 
 import com.ctre.phoenix.sensors.CANCoder;
-
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/** Add your docs here. */
+/**
+ * @author Anish Chandra
+ * Wraps AnalogInput Object and CANCoder Object to Simplify Position Data Collection
+*/
 public class GenericEncoder {
 
     private AnalogInput analogInput;
@@ -128,7 +129,5 @@ public class GenericEncoder {
 
     private double ticksToRadians(double ticks) {
         return ticks * 2 * Math.PI / ticksPerRotation;
-    }
-
-    
+    }    
 }
