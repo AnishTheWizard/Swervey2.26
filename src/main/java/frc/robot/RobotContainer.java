@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.libs.Wrappers.Controller;
+import frc.libs.wrappers.Controller;
 
 import frc.robot.subsystems.DriveTrain;
 
