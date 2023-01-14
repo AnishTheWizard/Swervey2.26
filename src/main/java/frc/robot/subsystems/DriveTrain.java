@@ -11,11 +11,11 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
-import frc.robot.libs.Swerve.Swerve;
-import frc.robot.libs.Swerve.SwerveBuilder;
-import frc.robot.libs.Wrappers.GenericMotor;
-import frc.robot.libs.Wrappers.GenericEncoder;
-import frc.robot.libs.Wrappers.Gyro;
+import frc.libs.swervey.Swerve;
+import frc.libs.swervey.SwerveBuilder;
+import frc.libs.wrappers.GenericMotor;
+import frc.libs.wrappers.GenericEncoder;
+import frc.libs.wrappers.Gyro;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;

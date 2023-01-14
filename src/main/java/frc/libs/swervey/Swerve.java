@@ -2,13 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.libs.Swerve;
+package frc.libs.swervey;
 
-import frc.robot.libs.Wrappers.GenericMotor;
-import frc.robot.libs.Wrappers.GenericEncoder;
-import frc.robot.libs.Wrappers.Gyro;
+import frc.libs.wrappers.GenericMotor;
+import frc.libs.wrappers.GenericEncoder;
+import frc.libs.wrappers.Gyro;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
+import frc.libs.wrappers.PIDController;
 
 /**
  * @author Anish Chandra
@@ -16,19 +16,18 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 */
 public class Swerve {
 
-  private SwerveModule[] modules;
-  private Gyro gyro;
+  private final SwerveModule[] modules;
+  private final Gyro gyro;
 
-  private PIDController driveController;
-  private PIDController steerController;
-  private PIDController rotateController;
+  private final PIDController driveController;
+  private final PIDController rotateController;
 
   private double[] speeds;
-  private double[] thetas;
+  private final double[] thetas;
 
   private double lowPercentSpeed, topPercentSpeed, currentPercentSpeed;
-  private double[] rotationAngles;
-  private double[][] modulePoses;
+  private final double[] rotationAngles;
+  private final double[][] modulePoses;
 
   private double rotateGainsThreshold;
   private double rotateVelocityThreshold;
@@ -50,9 +49,9 @@ public class Swerve {
     thetas = new double[numberOfModules];
     this.rotationAngles = new double[numberOfModules];
     this.modulePoses = modulePositions;
-    this.driveController = new PIDController(0, 0, 0);
-    this.steerController = new PIDController(0, 0, 0);
-    this.rotateController = new PIDController(0, 0, 0);
+    this.driveController = new PIDController();
+    PIDController steerController = new PIDController();
+    this.rotateController = new PIDController();
 
     this.gyro = gyro;
     this.x = 0;
@@ -78,13 +77,13 @@ public class Swerve {
   }
 
   public void configureDrivePIDGains(double[] gains) {
-    this.driveController.setPID(gains[0], gains[1], gains[2]);
+    this.driveController.setPID(gains);
   }
 
   public void configureRotatePIDGains(double[] highGains, double[] lowGains) {
     this.rotateHighGains = highGains;
     this.rotateLowGains = lowGains;
-    this.rotateController.setPID(rotateLowGains[0], rotateLowGains[1], rotateLowGains[1]);
+    this.rotateController.setPID(rotateLowGains);
   }
 
   public void configureThresholds(double sThresh, double rThresh, double rVelThresh) {
@@ -111,13 +110,11 @@ public class Swerve {
         isGyroAngleSet = true;
       }
 
-      if(Math.hypot(x, y) < rotateGainsThreshold) rotateController.setPID(rotateHighGains[0], rotateHighGains[1], rotateHighGains[2]);
-      else rotateController.setPID(rotateLowGains[0], rotateLowGains[1], rotateLowGains[2]);
+      if(Math.hypot(x, y) < rotateGainsThreshold) rotateController.setPID(rotateHighGains);
+      else rotateController.setPID(rotateLowGains);
 
       rotate = rotateController.calculate(gyro.getYaw(), gyroHold);
       if(Math.abs(rotate) < rotateVelocityThreshold) rotate = 0;
-
-      
     }
     else {
       isGyroAngleSet = false;
@@ -218,8 +215,8 @@ public class Swerve {
     double yErr = driveController.calculate(currentPose[1], target[1]);
     double speed = Math.hypot(xErr, yErr);
 
-    if(speed < rotateGainsThreshold) rotateController.setPID(rotateHighGains[0], rotateHighGains[1], rotateHighGains[2]);
-    else rotateController.setPID(rotateLowGains[0], rotateLowGains[1], rotateLowGains[2]);
+    if(speed < rotateGainsThreshold) rotateController.setPID(rotateHighGains);
+    else rotateController.setPID(rotateLowGains);
 
     double rotateErr = rotateController.calculate(currentPose[2], target[2]);
 

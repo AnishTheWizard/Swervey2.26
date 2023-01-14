@@ -2,11 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.libs.Wrappers;
+package frc.libs.wrappers;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.AnalogInput;
 
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,14 +26,14 @@ public class GenericEncoder {
         CANCODER
     }
 
-    private EncoderType encoderType;
+    private final EncoderType encoderType;
 
-    private Object encoderLock;
-    private ScheduledExecutorService service;
+    private final Object encoderLock;
+    private final ScheduledExecutorService service;
     
     private int overflows;
     private double lastSensorPose;
-    private double moduleOffset;
+    private final double moduleOffset;
 
     private int ticksPerRotation;
     private int threshold;
@@ -101,7 +102,7 @@ public class GenericEncoder {
         }
     }
 
-    public double getContinousPosition() {
+    public double getContinuousPosition() {
         synchronized(encoderLock) {
             switch(encoderType) {
                 case ANALOG:
@@ -117,13 +118,10 @@ public class GenericEncoder {
 
     public double getCPTicks() {
         synchronized(encoderLock) {
-            switch(encoderType) {
-                case ANALOG:
-                    return overflows * ticksPerRotation + getAbsolutePosition();
-                default:
-                    return -1;
-                
+            if (Objects.requireNonNull(encoderType) == EncoderType.ANALOG) {
+                return overflows * ticksPerRotation + getAbsolutePosition();
             }
+            return -1;
         }
     }
 

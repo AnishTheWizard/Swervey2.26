@@ -2,11 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.libs.Swerve;
+package frc.libs.swervey;
 
-import frc.robot.libs.Wrappers.GenericMotor;
-import frc.robot.libs.Wrappers.GenericEncoder;
-import edu.wpi.first.wpilibj.controller.PIDController;
+import frc.libs.wrappers.GenericMotor;
+import frc.libs.wrappers.GenericEncoder;
+import frc.libs.wrappers.PIDController;
 
 /** 
  * @author Anish Chandra
@@ -14,11 +14,11 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 */
 public class SwerveModule {
 
-    private GenericMotor drive;
-    private GenericMotor steer;
-    private GenericEncoder steercoder;
+    private final GenericMotor drive;
+    private final GenericMotor steer;
+    private final GenericEncoder steercoder;
 
-    private PIDController steerController;
+    private final PIDController steerController;
     private double[] steerHighGains;
     private double[] steerLowGains;
     private double threshold;
@@ -41,7 +41,7 @@ public class SwerveModule {
     public void configureSteerPIDGains(double[] highGains, double[] lowGains) {
         this.steerHighGains = highGains;
         this.steerLowGains = lowGains;
-        this.steerController.setPID(lowGains[0], lowGains[1], lowGains[2]);
+        this.steerController.setPID(lowGains);
     }
 
     public void configureSteerThreshold(double sThresh) {
@@ -50,7 +50,7 @@ public class SwerveModule {
 
     public void set(double velocity, double targetAngle, double gyroAngle) {
 
-        double err = getError(targetAngle, steercoder.getContinousPosition());
+        double err = getError(targetAngle, steercoder.getContinuousPosition());
 
         if(err > Math.PI/2) {
             err -= Math.PI;
@@ -61,7 +61,7 @@ public class SwerveModule {
             velocity*=-1;
         }
 
-        double direction = steercoder.getContinousPosition() % (2 * Math.PI);
+        double direction = steercoder.getContinuousPosition() % (2 * Math.PI);
         double distance = drive.getSensorPose() - lastSensorPose;
 
         x += distance * Math.cos(direction + gyroAngle);
@@ -69,8 +69,8 @@ public class SwerveModule {
 
         lastSensorPose = drive.getSensorPose();
 
-        if(velocity < threshold) steerController.setPID(steerHighGains[0], steerHighGains[1], steerHighGains[2]);
-        else steerController.setPID(steerLowGains[0], steerLowGains[1], steerLowGains[2]);
+        if(velocity < threshold) steerController.setPID(steerHighGains);
+        else steerController.setPID(steerLowGains);
 
         double rotateSpeed = steerController.calculate(err);
         drive.set(velocity);
