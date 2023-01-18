@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.DriveTrainOld;
 
 public class MoveTo extends CommandBase {
   /** Creates a new MoveTo. */
@@ -13,37 +13,37 @@ public class MoveTo extends CommandBase {
   int sustain;
   public MoveTo(double[] target) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(DriveTrain.getInstance());
+    addRequirements(DriveTrainOld.getInstance());
     this.target = target;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    DriveTrain.getInstance().lockDriveTrain();
+    DriveTrainOld.getInstance().lockDriveTrain();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    DriveTrain.getInstance().toPose(target);
+    DriveTrainOld.getInstance().toPose(target);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    DriveTrain.getInstance().unlockDriveTrain();
+    DriveTrainOld.getInstance().unlockDriveTrain();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(DriveTrain.getInstance().atSetpoint()) {
+    if(DriveTrainOld.getInstance().atSetpoint()) {
       sustain++;
     }
     else {
       sustain = 0;
     }
-    return sustain >= DriveTrain.getInstance().getCurrentSpeedMultiplier() * 10;
+    return sustain >= DriveTrainOld.getInstance().getCurrentSpeedMultiplier() * 10;
   }
 }

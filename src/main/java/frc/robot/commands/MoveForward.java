@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.DriveTrainOld;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -19,8 +19,8 @@ public class MoveForward extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new MoveTo(new double[]{10, 0, 0}),
-      new InstantCommand(() -> DriveTrain.getInstance().setTarget(new double[] {15, 0, 0})),
-      new RunCommand(() -> DriveTrain.getInstance().control(0, 0.3, 0)).raceWith(new InstantCommand(DriveTrain.getInstance()::atSetpoint, DriveTrain.getInstance())),
+      new InstantCommand(() -> DriveTrainOld.getInstance().setTarget(new double[] {15, 0, 0})),
+      new RunCommand(() -> DriveTrainOld.getInstance().control(0, 0.3, 0)).raceWith(new InstantCommand(DriveTrainOld.getInstance()::atSetpoint, DriveTrainOld.getInstance())),
       new MoveTo(new double[]{0, 0, 0})
     );
   }
