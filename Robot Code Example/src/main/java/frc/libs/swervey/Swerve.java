@@ -309,7 +309,7 @@ public class Swerve {
       yVelAvg += (1.0/modules.length) * modules[i].getDriveVelocity() * Math.sin(modules[i].getModuleRotationalPose());
       
     }
-    return 0;
+    return -1;
   }
 
   public double getHeading() {

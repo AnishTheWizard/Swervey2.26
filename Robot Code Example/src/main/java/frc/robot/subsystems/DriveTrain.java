@@ -9,19 +9,16 @@ import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.libs.motionoftheocean.MotionOfTheOcean;
 import frc.libs.swervey.Swerve;
 import frc.libs.swervey.SwerveBuilder;
 import frc.libs.wrappers.GenericEncoder;
 import frc.libs.wrappers.GenericMotor;
 import frc.libs.wrappers.Gyro;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.RobotMap;
 
 
 import frc.libs.sharkodo.sharkodo.SharkOdo;
-import frc.libs.sharkodo.profiler.SwerveProfiler;
 
 public class DriveTrain extends SubsystemBase {
 
@@ -64,15 +61,6 @@ public class DriveTrain extends SubsystemBase {
                 .accelerationParameters(Constants.ACCELERATION_PARAMETERS)
                 .autonomousParameters(Constants.TICKS_PER_INCHES, Constants.ALLOWED_ERRORS, Constants.VELOCITY_FEED_FORWARD)
                 .buildSwerve();
-
-        // SwerveProfiler profiler = new SwerveProfiler(swerve::getAllModuleDrivePose, swerve::getHeading, Constants.TICKS_PER_INCHES, 20);
-        
-        // this.sharkOdo = new SharkOdo(profiler, 20);
-
-        // MotionOfTheOcean.addPositionFunctions(sharkOdo::getPoseAsArray, this::toPose);
-
-        new TalonFX(0).set(ControlMode.)
-
     }
 
     public void control(double x, double y, double rotate) {
@@ -82,7 +70,6 @@ public class DriveTrain extends SubsystemBase {
     public void reset() {
         swerve.reset();
         swerve.zeroGyro();
-        // sharkOdo.resetPose();
     }
 
     public void startOdometry() {
