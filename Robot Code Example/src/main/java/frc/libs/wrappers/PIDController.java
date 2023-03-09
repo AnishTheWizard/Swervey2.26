@@ -58,20 +58,20 @@ public class PIDController {
 
         double derivedErr = (err - lastErr)/elapsed;
 
-        SmartDashboard.putNumber("err", err);
-        SmartDashboard.putNumber("totalErr", totalErr);
-        SmartDashboard.putNumber("derivedErr", derivedErr);
+        // SmartDashboard.putNumber("err", err);
+        // SmartDashboard.putNumber("totalErr", totalErr);
+        // SmartDashboard.putNumber("derivedErr", derivedErr);
 
-        SmartDashboard.putNumber("P Contribution", kP * err);
-        SmartDashboard.putNumber("I Contribution", kI * totalErr);
-        SmartDashboard.putNumber("D Contribution", kD * derivedErr);
+        // SmartDashboard.putNumber("P Contribution", kP * err);
+        // SmartDashboard.putNumber("I Contribution", kI * totalErr);
+        // SmartDashboard.putNumber("D Contribution", kD * derivedErr);
 
         double output = kP * err + kI * totalErr + kD * derivedErr;
 
         lastErr = err;
         // prevTime = System.currentTimeMillis();
 
-        SmartDashboard.putNumber("elapsed", elapsed);
+        // SmartDashboard.putNumber("elapsed", elapsed);
 
         return output;
     }

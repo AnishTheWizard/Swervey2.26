@@ -35,7 +35,7 @@ public class Controller {
     }
 
     public double getLeftJoyY() {
-        double joyVal = -joy.getY();;
+        double joyVal = -joy.getY();
         if(joyVal < deadband && joyVal > -deadband) joyVal = 0;
         return joyVal;
     }

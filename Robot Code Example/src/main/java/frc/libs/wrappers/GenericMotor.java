@@ -16,7 +16,6 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import edu.wpi.first.math.controller.PIDController;
 
 /**
  * @author Anish Chandra
@@ -131,27 +130,6 @@ public class GenericMotor {
 
     public double getConversionFactor() {
         return spark.getEncoder().getCountsPerRevolution();
-    }
-
-    public double getSensorErr() {//automatically updates the lastPose through the set method in swerve module
-        double err;
-        switch(motorType) {
-            case FALCON:
-                err = falcon.getSelectedSensorPosition() - lastSensorPose;
-                lastSensorPose = falcon.getSelectedSensorPosition();
-            case SPARK:
-                err = spark.getEncoder().getPosition() - lastSensorPose;
-                lastSensorPose = spark.getEncoder().getPosition();
-            case TALON:
-                err = talon.getSelectedSensorPosition() - lastSensorPose;
-                lastSensorPose = talon.getSelectedSensorPosition();
-            case VICTOR:
-                err = victor.getSelectedSensorPosition() - lastSensorPose;
-                lastSensorPose = victor.getSelectedSensorPosition();
-            default:
-                err = -1;
-        }
-        return err;
     }
 
     public void inverted(boolean invert) {

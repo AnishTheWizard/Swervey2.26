@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.libs.motionoftheocean.MotionOfTheOcean;
+import frc.robot.subsystems.DriveTrain;
 
 
 /**
@@ -37,6 +39,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = RobotContainer.getInstance();
+    MotionOfTheOcean.setSelectedPath("/paths/recording.csv");
   }
 
   /**
@@ -88,6 +91,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     state = Phase.TELEOP;
+
+    // DriveTrain.getInstance().startOdometry();
   }
 
   /** This function is called periodically during operator control. */

@@ -25,7 +25,7 @@ public class RobotContainer {
 
   private DriveTrain dt;
 
-  private final Controller joy = new Controller(0, Constants.CONTROLLER_DEADBAND);
+  private final Controller joy = new Controller(0, .25);
  
   private static RobotContainer robotContainer = null;
 
@@ -51,7 +51,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    // joy.getSTARTButton().whenPressed(() -> driveTrainOld.reset());
+    joy.getSTARTButton().onTrue(new InstantCommand(() -> dt.reset()));
     // joy.getBButton().whenHeld(new RunCommand(() -> driveTrain.toPose(new double[]{0, 0, 0}), DriveTrain.getInstance()));
     // joy.getYButton().whenPressed(() -> driveTrainOld.toggleSpeed());
     // joy.getXButton().whenPressed(() -> driveTrain.control(0.0, 0.3, 0.0));

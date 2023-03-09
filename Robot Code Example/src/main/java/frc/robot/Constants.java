@@ -22,7 +22,7 @@ public final class Constants {
      // Encoder Parameters
      public static final double OVERFLOW_THRESHOLD = Math.PI;
  
-     public static final double[] MODULE_OFFSETS = {30.146484375, 317.98828125, 26.89453125, 122.607421875};
+     public static final double[] MODULE_OFFSETS = {27.94921875, 316.845703125, 25.83984375, 122.51953125};
  
  
      // Physical Configuration 
@@ -31,16 +31,13 @@ public final class Constants {
      public static final double WIDTH = 22.8125;
  
  
-     // TODO: Autonomous Parameters
      public static final double TRANSLATIONAL_ERROR = 0;
      public static final double ROTATE_ERROR = 0;
      public static final double LIMELIGHT_OFFSET = 0;
  
-     public static final double TICKS_PER_INCHES = 0;
+     public static final double TICKS_PER_INCHES = 1170.58602;//44.228775
  
      public static String AUTONOMOUS_PATH_FILENAME = "/paths/recording.csv";
-     // public static String AUTONOMOUS_PATH_FILENAME = "/paths/2Balls1HangarFinalv2.csv";
- 
  
      // Teleoperated Parameters
      public static final double LOW_BOUND_SPEED = 0.75;
@@ -74,6 +71,8 @@ public final class Constants {
      public static final double STEER_GAINS_THRESHOLD = 2146.5; // 9%
      public static final double ROTATE_GAINS_THRESHOLD = 0.15; //TODO: Convert to velocity
      public static final double ROTATE_VELOCITY_THRESHOLD = 0.2;
+
+     public static final double VELOCITY_FEED_FORWARD = 0;
  
  
      // REFORMATTED SWERVE PARAMETERS
@@ -86,10 +85,10 @@ public final class Constants {
  
      public static final double[] STEER_AND_ROTATE_THRESHOLDS = {STEER_GAINS_THRESHOLD, ROTATE_GAINS_THRESHOLD, ROTATE_VELOCITY_THRESHOLD};
  
-     public static final double[][] MODULE_POSITIONS =  {new double[]{WIDTH/24, LENGTH/24}, 
-                                                         new double[]{-WIDTH/24, LENGTH/24}, 
-                                                         new double[]{-WIDTH/24, -LENGTH/24}, 
-                                                         new double[]{WIDTH/24, -LENGTH/24}};
+     public static final double[][] MODULE_POSITIONS =  {new double[]{WIDTH/2, LENGTH/2}, 
+                                                         new double[]{-WIDTH/2, LENGTH/2}, 
+                                                         new double[]{-WIDTH/2, -LENGTH/2}, 
+                                                         new double[]{WIDTH/2, -LENGTH/2}};
  
      public static final double[] ALLOWED_ERRORS = {TRANSLATIONAL_ERROR, ROTATE_ERROR};
  

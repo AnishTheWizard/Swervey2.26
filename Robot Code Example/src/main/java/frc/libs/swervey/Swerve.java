@@ -4,6 +4,7 @@
 
 package frc.libs.swervey;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.libs.wrappers.GenericEncoder;
 import frc.libs.wrappers.GenericMotor;
 import frc.libs.wrappers.Gyro;
@@ -38,12 +39,15 @@ public class Swerve {
   private double[] rotateLowGains;
   private boolean isGyroAngleSet;
   private double gyroHold;
+  private double lastHeading;
 
   private double x, y;
+  private double lastX, lastY;
   private double ticksPerFeet;
   private double[] target;
   private double allowedTranslationalError;
   private double allowedRotationalError;
+  private double velocityFeedForward;
 
   private boolean isFieldCentric;
 
@@ -63,7 +67,11 @@ public class Swerve {
     this.gyro = gyro;
     this.x = 0;
     this.y = 0;
+    this.lastX = 0;
+    this.lastY = 0;
     this.target = new double[3];
+
+    this.lastHeading = gyro.getYaw();
 
     for(int i = 0; i < numberOfModules; i++) {
         modules[i] = new SwerveModule(drives[i],
@@ -76,7 +84,7 @@ public class Swerve {
     }
 
     for(int i = 0; i < rotationAngles.length; i++) 
-      rotationAngles[i] = Math.atan2(modulePositions[i][1], modulePositions[i][0]) + Math.PI/2;
+      rotationAngles[i] = Math.atan2(modulePositions[i][1], modulePositions[i][0]) + (Math.PI/2);
     
     reset();
     zeroGyro();
@@ -103,10 +111,11 @@ public class Swerve {
     this.rotateVelocityThreshold = rVelThresh;
   }
 
-  public void configureAutonomousParameters(double ticksPerFeet, double translationalError, double rotationalError) {
+  public void configureAutonomousParameters(double ticksPerFeet, double translationalError, double rotationalError, double velocityFeedForwardGain) {
     this.ticksPerFeet = ticksPerFeet;
     this.allowedTranslationalError = translationalError;
     this.allowedRotationalError = rotationalError;
+    this.velocityFeedForward = velocityFeedForwardGain;
   }
 
   public void configureSpeeds(double topSpeed, double lowSpeed) {
@@ -150,7 +159,7 @@ public class Swerve {
       else rotateController.setPID(rotateLowGains);
 
       rotate = rotateController.calculate(gyro.getYaw(), gyroHold);
-      if(Math.abs(rotate) < rotateVelocityThreshold * currentPercentSpeed) rotate = 0;
+      if(Math.abs(rotate) < rotateVelocityThreshold) rotate = 0;
     }
     else {
       isGyroAngleSet = false;
@@ -240,6 +249,32 @@ public class Swerve {
     return modules[i].getDrivePose();
   }
 
+  public double[][] getAllModuleDrivePoseDelta() {
+    double[][] out = new double[modules.length][2];
+
+    for(int i = 0; i < modules.length; i++) {
+      double distance = modules[i].getDrivePoseDelta();
+      double angle = modules[i].getSteerAngleDelta();
+
+      out[i] = new double[]{distance, angle};
+    }
+
+    return out;
+  }
+
+  public double[][] getAllModuleDrivePose() {
+    double[][] out = new double[modules.length][2];
+
+    for(int i = 0; i < modules.length; i++) {
+      double distance = modules[i].getDrivePose();
+      double angle = modules[i].getModuleRotationalPose();
+
+      out[i] = new double[]{distance, angle};
+    }
+    
+    return out;
+  }
+
   public double getModuleDriveVelocity(int i) {
     return modules[i].getDriveVelocity();
   }
@@ -255,7 +290,36 @@ public class Swerve {
       x += modules[i].getCurrentModulePosition()[0]/modules.length;
       y += modules[i].getCurrentModulePosition()[1]/modules.length;
     }
-    return new double[]{x/ticksPerFeet, y/ticksPerFeet, gyro.getYaw()};
+    double deltaX = x - lastX;
+    double deltaY = y - lastY;
+
+    double velocity = Math.hypot(deltaX, deltaY)/0.02;
+
+    lastX = x;
+    lastY = y;
+    return new double[]{x/ticksPerFeet, y/ticksPerFeet, gyro.getYaw(), velocity/ticksPerFeet};
+  }
+
+  public double getChassisVelocity() {
+    double xVelAvg = 0, yVelAvg = 0;
+    double angleAvg = 0;
+
+    for(int i = 0; i < modules.length; i++) {
+      xVelAvg += (1.0/modules.length) * modules[i].getDriveVelocity() * Math.cos(modules[i].getModuleRotationalPose());
+      yVelAvg += (1.0/modules.length) * modules[i].getDriveVelocity() * Math.sin(modules[i].getModuleRotationalPose());
+      
+    }
+    return 0;
+  }
+
+  public double getHeading() {
+    return gyro.getYaw();
+  }
+
+  public double getHeadingDelta() {
+    double out = gyro.getYaw() - lastHeading;
+    lastHeading = gyro.getYaw();
+    return out;
   }
   
   public void toPose(double[] target) {
@@ -271,6 +335,21 @@ public class Swerve {
     double rotateErr = rotateController.calculate(currentPose[2], target[2]);
 
     control(xErr, yErr, rotateErr);
+  }
+
+  public void toPoseWithMotion(double[] target) {
+    double[] currentPose = getPose();
+    double targetX = target[0];
+    double targetY = target[1];
+    double targetTheta = target[2];
+    double targetVelocity = target[3];
+    double feedForward = velocityFeedForward * targetVelocity;
+    double translationalAdjustment = Math.hypot(
+      driveController.calculate(currentPose[0], targetX),
+      driveController.calculate(currentPose[1], targetY));
+    double rotationalAdjustment = rotateController.calculate(currentPose[2], targetTheta);
+
+    // control(feedForward + translationalAdjustment)
   }
 
   public boolean atSetpoint() {
